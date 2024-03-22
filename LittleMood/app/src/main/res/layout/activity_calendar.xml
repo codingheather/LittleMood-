@@ -4,6 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@color/light_yellow"
     tools:context=".CalendarActivity">
 
     <!-- Header: App Title and Settings Button -->
@@ -23,27 +24,55 @@
         android:id="@+id/settingsIcon"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:src="@drawable/settings"
+        android:src="@drawable/ic_settings"
+        app:layout_constraintBottom_toTopOf="@+id/calendarView"
+        app:layout_constraintEnd_toStartOf="@+id/searchIcon"
+        app:layout_constraintStart_toEndOf="@+id/appTitle"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <ImageView
+        android:id="@+id/searchIcon"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:src="@drawable/ic_search"
         app:layout_constraintBottom_toTopOf="@+id/calendarView"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toEndOf="@+id/appTitle"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintHorizontal_bias="0.9"  />
+        app:layout_constraintStart_toEndOf="@+id/settingsIcon"
+        app:layout_constraintTop_toTopOf="parent" />
 
-    <CalendarView
+    <SearchView
+        android:id="@+id/searchView"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:visibility="gone"
+        android:background="@android:color/white"
+        app:layout_constraintBottom_toTopOf="@+id/calendarView"
+        app:layout_constraintEnd_toStartOf="@+id/searchIcon"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintHorizontal_chainStyle="spread"/>
+
+    <com.applandeo.materialcalendarview.CalendarView
         android:id="@+id/calendarView"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        app:pagesColor="@color/light_yellow"
+        app:background="@color/light_yellow"
+        app:abbreviationsLabelsColor="@color/black"
+        app:headerColor="@color/baby_blue"
+        app:headerLabelColor="@color/black"
+        app:selectionLabelColor="@color/black"
         app:layout_constraintBottom_toTopOf="@+id/inspiringWordsTextView"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toTopOf="parent"/>
 
     <TextView
         android:id="@+id/inspiringWordsTextView"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Inspiring Words"
+        android:text="You are awesome!"
+        android:textSize="24sp"
         android:gravity="center"
         app:layout_constraintBottom_toTopOf="@+id/addNoteButton"
         app:layout_constraintEnd_toEndOf="parent"
@@ -54,13 +83,13 @@
     <ImageView
         android:id="@+id/addNoteButton"
         android:layout_width="100dp"
-        android:layout_height="86dp"
+        android:layout_height="100dp"
         android:src="@drawable/add_note_face"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.498"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/inspiringWordsTextView" />
+        app:layout_constraintTop_toBottomOf="@+id/inspiringWordsTextView"
+        android:contentDescription="Add Note" />
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>
