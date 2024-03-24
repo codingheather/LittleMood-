@@ -1,0 +1,15 @@
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <EditTextPreference
+        android:key="signature"
+        android:title="Signature"
+        android:summary="Enter your email signature"
+        android:dialogTitle="Set your email signature" />
+
+    <CheckBoxPreference
+        android:key="email_notifications"
+        android:title="Enable email notifications"
+        android:summary="Check to enable email notifications" />
+
+
+</PreferenceScreen>
