@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <EditTextPreference
+        android:key="email"
+        android:title="Email"
+        android:summary="Enter your email"
+        android:dialogTitle="Set your email" />
+
+    <CheckBoxPreference
+        android:key="email_notifications"
+        android:title="Enable email notifications"
+        android:summary="Check to enable email notifications" />
+
+    <Preference
+        android:key="change_password"
+        android:title="Change Password"
+        android:summary="Update your account password" />
+
+    <Preference
+        android:key="change_username"
+        android:title="Change Username"
+        android:summary="Update your username" />
+
+    <Preference
+        android:key="update_notifications"
+        android:title="Notification Settings"
+        android:summary="Configure your notification preferences" />
+
+    <Preference
+        android:key="logout"
+        android:title="Log Out"
+        android:summary="Log out of your account" />
+
+    <Preference
+        android:key="clear_data"
+        android:title="Clear Data"
+        android:summary="Clear all app data and settings" />
+
+    <Preference
+        android:key="cancel_account"
+        android:title="Cancel Account"
+        android:summary="Cancel the account and everything" />
+
+
+</PreferenceScreen>
