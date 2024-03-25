@@ -2,10 +2,10 @@
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
 
     <EditTextPreference
-        android:key="signature"
-        android:title="Signature"
-        android:summary="Enter your email signature"
-        android:dialogTitle="Set your email signature" />
+        android:key="email"
+        android:title="Email"
+        android:summary="Enter your email"
+        android:dialogTitle="Set your email" />
 
     <CheckBoxPreference
         android:key="email_notifications"
@@ -40,7 +40,7 @@
     <Preference
         android:key="cancel_account"
         android:title="Cancel Account"
-        android:summary="cancel the account and everything" />
+        android:summary="Cancel the account and everything" />
 
 
 </PreferenceScreen>

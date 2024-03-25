@@ -5,6 +5,7 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -13,15 +14,16 @@ public class LoginActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.fragment_login);
+        setContentView(R.layout.activity_login);
 
-        final EditText usernameEditText = findViewById(R.id.Email);
-        final EditText passwordEditText = findViewById(R.id.Password);
-        Button loginButton = findViewById(R.id.LogInBotton);
-        Button goToSignUpButton = findViewById(R.id.GoSignup);
+        final EditText email = findViewById(R.id.Email);
+        final EditText password = findViewById(R.id.Password);
+        Button login = findViewById(R.id.LogInButton);
+        Button goToSignUp = findViewById(R.id.GoSignup);
     }
 
     public void login(View view) {
+        Toast.makeText(this, "Successfully log in", Toast.LENGTH_SHORT).show();
     }
 
     public void openSignUp(View view) {
