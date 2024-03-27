@@ -40,17 +40,17 @@
         app:layout_constraintStart_toEndOf="@+id/settingsIcon"
         app:layout_constraintTop_toTopOf="parent" />
 
-    <SearchView
-        android:id="@+id/searchView"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:visibility="gone"
-        android:background="@android:color/white"
-        app:layout_constraintBottom_toTopOf="@+id/calendarView"
-        app:layout_constraintEnd_toStartOf="@+id/searchIcon"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintHorizontal_chainStyle="spread"/>
+<!--    <SearchView-->
+<!--        android:id="@+id/searchView"-->
+<!--        android:layout_width="0dp"-->
+<!--        android:layout_height="wrap_content"-->
+<!--        android:visibility="gone"-->
+<!--        android:background="@android:color/white"-->
+<!--        app:layout_constraintBottom_toTopOf="@+id/calendarView"-->
+<!--        app:layout_constraintEnd_toStartOf="@+id/searchIcon"-->
+<!--        app:layout_constraintStart_toStartOf="parent"-->
+<!--        app:layout_constraintTop_toTopOf="parent"-->
+<!--        app:layout_constraintHorizontal_chainStyle="spread"/>-->
 
     <com.applandeo.materialcalendarview.CalendarView
         android:id="@+id/calendarView"
@@ -72,24 +72,26 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="You are awesome!"
-        android:textSize="24sp"
+        android:textSize="22sp"
+        android:textStyle="italic"
         android:gravity="center"
-        app:layout_constraintBottom_toTopOf="@+id/addNoteButton"
+        android:paddingStart="16dp"
+        android:paddingEnd="16dp"
+        app:layout_constraintBottom_toTopOf="@+id/addJournalButton"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/calendarView"/>
 
-    <!-- Add New Note Button -->
     <ImageView
-        android:id="@+id/addNoteButton"
+        android:id="@+id/addJournalButton"
         android:layout_width="100dp"
         android:layout_height="100dp"
-        android:src="@drawable/add_note_face"
+        android:src="@drawable/add_journal_face"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/inspiringWordsTextView"
-        android:contentDescription="Add Note" />
+        android:contentDescription="Add Journal" />
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>
