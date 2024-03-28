@@ -71,7 +71,7 @@ public class MoodActivity extends AppCompatActivity {
     }
 
     private void OnClick1(View view) {
-        Intent intent = new Intent(MoodActivity.this,MainActivity.class);
+        Intent intent = new Intent(MoodActivity.this, JournalActivity.class);
         if(view.getId()==R.id.img1){
             intent.putExtra("name", img1.getText().toString());
         }else if(view.getId()==R.id.img2){
