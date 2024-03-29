@@ -41,10 +41,8 @@ public class JournalActivity extends AppCompatActivity {
             month = today.get(Calendar.MONTH) + 1;
             day = today.get(Calendar.DAY_OF_MONTH);
         }
-        // date string
-        String formattedDate = String.format(Locale.getDefault(), "%04d-%02d-%02d", year, month, day);
-        // test the formatted date string
-        System.out.println("Formatted Date: " + formattedDate);
+//        // date string
+//        String formattedDate = String.format(Locale.getDefault(), "%04d-%02d-%02d", year, month, day);
 
         // update time text ui
         TextView timeTextView = findViewById(R.id.time);
@@ -60,7 +58,6 @@ public class JournalActivity extends AppCompatActivity {
         img1.setText(name);
 
         ImageView ok = findViewById(R.id.ok);
-        System.out.println();
         ok.setOnClickListener(new View.OnClickListener() {
             FirebaseUser user = mAuth.getCurrentUser();
             String date = ((TextView) findViewById(R.id.time)).getText().toString();
