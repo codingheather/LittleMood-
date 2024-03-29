@@ -89,6 +89,14 @@ public class MoodActivity extends AppCompatActivity {
         }else if(view.getId()==R.id.img8){
             intent.putExtra("name", img8.getText().toString());
         }
+        // Retrieve the data from the intent
+        int year = getIntent().getIntExtra("YEAR", -1);
+        int month = getIntent().getIntExtra("MONTH", -1);
+        int day = getIntent().getIntExtra("DAY", -1);
+
+        intent.putExtra("YEAR", year);
+        intent.putExtra("MONTH", month);
+        intent.putExtra("DAY", day);
         startActivity(intent);
     }
 
