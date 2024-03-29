@@ -1,0 +1,30 @@
+{
+  "project_info": {
+    "project_number": "322376599122",
+    "firebase_url": "https://group26finalproj-cb7cd-default-rtdb.firebaseio.com",
+    "project_id": "group26finalproj-cb7cd",
+    "storage_bucket": "group26finalproj-cb7cd.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:322376599122:android:0c6bb12cef8c241995018b",
+        "android_client_info": {
+          "package_name": "edu.northeastern.group26.littlemood"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAJDSE2uPaObwZYl5u-QcICSamoNbaoUyY"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
