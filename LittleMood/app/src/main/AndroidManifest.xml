@@ -36,7 +36,11 @@
             </intent-filter>
         </activity>
         <activity android:name=".SignUpActivity"></activity>
-        <activity android:name=".CalendarActivity"></activity>
+        <activity
+            android:name=".CalendarActivity"
+            android:windowSoftInputMode="adjustPan|stateHidden"
+            >
+        </activity>
     </application>
 
 </manifest>

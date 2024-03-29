@@ -23,8 +23,12 @@ public class JournalActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_journal);
+        // year month day from calendar, name(emoji) from mood
+        String name = getIntent().getStringExtra("name");
+        Integer year =getIntent().getIntExtra("YEAR", -1);
+        Integer month =getIntent().getIntExtra("MONTH", -1);
+        Integer day =getIntent().getIntExtra("DAY", -1);
 
-        String name=getIntent().getStringExtra("name");
         TextView img1=findViewById(R.id.img1);
         img1.setText(name);
 

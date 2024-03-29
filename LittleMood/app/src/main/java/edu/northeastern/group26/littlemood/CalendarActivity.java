@@ -1,6 +1,5 @@
 package edu.northeastern.group26.littlemood;
 
-import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
@@ -8,16 +7,15 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.util.Log;
+import android.view.View;
 import android.widget.ImageView;
+import android.widget.SearchView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.applandeo.materialcalendarview.CalendarDay;
 import com.applandeo.materialcalendarview.CalendarView;
-import com.applandeo.materialcalendarview.DatePicker;
 import com.applandeo.materialcalendarview.EventDay;
-import com.applandeo.materialcalendarview.builders.DatePickerBuilder;
-import com.applandeo.materialcalendarview.listeners.OnSelectDateListener;
-
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -27,9 +25,11 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 
@@ -39,9 +39,9 @@ public class CalendarActivity extends AppCompatActivity {
     private ImageView searchIcon;
     private ImageView settingIcon;
     private CalendarView calendarView;
+    private SearchView searchInput;
     private TextView quoteTextView;
     private Handler quoteHandler;
-    private String dailyQuote;
     private static final int SUCCESS = 100;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -52,6 +52,7 @@ public class CalendarActivity extends AppCompatActivity {
         addJournalButton = findViewById(R.id.addJournalButton);
         settingIcon = findViewById(R.id.settingsIcon);
         quoteTextView = findViewById(R.id.inspiringWordsTextView);
+        searchInput = findViewById(R.id.searchView);
 
         // get daily quote(inspiring words) from API and update UI
         getDailyQuote();
@@ -70,15 +71,30 @@ public class CalendarActivity extends AppCompatActivity {
 
         // define search activity
         searchIcon = findViewById(R.id.searchIcon);
-        searchIcon.setOnClickListener(v -> showDatePicker());
+//        searchIcon.setOnClickListener(v -> showDatePicker());
+        searchIcon.setOnClickListener(v -> showSearchedDate(searchInput));
 
         // show emojis under each date
         setDay(calendarView);
+
+        calendarView.setOnCalendarDayClickListener(calendarDay -> {
+            Intent intent = new Intent(CalendarActivity.this, MoodActivity.class);
+            // Extract the year, month, and day from the clicked CalendarDay
+            int year = calendarDay.getCalendar().get(Calendar.YEAR);
+            int month = calendarDay.getCalendar().get(Calendar.MONTH);
+            int day = calendarDay.getCalendar().get(Calendar.DAY_OF_MONTH);
+            // Put the year, month, and day as extras in the intent
+            intent.putExtra("YEAR", year);
+            intent.putExtra("MONTH", month);
+            intent.putExtra("DAY", day);
+
+            startActivity(intent);
+        });
     }
 
     private void setDay(CalendarView calendarView){
         List<EventDay> events = new ArrayList<>();
-        // todo: show emojis same as MoodActivity
+        // todo: show emojis from firebase
         // Happy day
         Calendar happyDay = Calendar.getInstance();
         happyDay.set(2024, Calendar.MARCH, 15);
@@ -92,22 +108,61 @@ public class CalendarActivity extends AppCompatActivity {
         calendarView.setEvents(events);
     }
 
-    private void showDatePicker() {
-        // Define the listener to handle date selection
-        OnSelectDateListener listener = calendar -> {
-            Calendar selectedDate = calendar.get(0);
-            SimpleDateFormat format = new SimpleDateFormat("dd/MM/yyyy", Locale.getDefault());
-            String dateString = format.format(selectedDate.getTime());
-            Toast.makeText(CalendarActivity.this, "Selected Date: " + dateString, Toast.LENGTH_LONG).show();
-        };
-        // Build and show the date picker
-        DatePickerBuilder builder = new DatePickerBuilder(this, listener)
-                .pickerType(CalendarView.RANGE_PICKER);
-        DatePicker datePicker = builder.build();
-        datePicker.show();
+    private void showSearchedDate(SearchView searchView){
+        if (searchView.getVisibility() == View.GONE) {
+            searchView.setVisibility(View.VISIBLE);
+        } else {
+            searchView.setVisibility(View.GONE);
+        }
+        searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+            @Override
+            public boolean onQueryTextSubmit(String query) {
+                SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault());
+                format.setLenient(false);
+                try {
+                    Date date = format.parse(query);
+                    Calendar calendar = Calendar.getInstance();
+                    if (date != null) {
+                        calendar.setTime(date);
+                        Toast.makeText(CalendarActivity.this, "Selected date: " + query, Toast.LENGTH_SHORT).show();
+                        calendarView.setDate(date);
+                        List<CalendarDay> events = new ArrayList<>();
+                        CalendarDay searchedDay = new CalendarDay(calendar);
+                        searchedDay.setLabelColor(R.color.baby_blue);
+                        events.add(searchedDay);
+                        calendarView.setCalendarDays(events);
+                    }
+                } catch (ParseException e) {
+                    e.printStackTrace();
+                    // Notify user about the wrong date format
+                    Toast.makeText(CalendarActivity.this, "Invalid date format. Please use YYYY-MM-DD.", Toast.LENGTH_SHORT).show();
+                }
+                searchView.setVisibility(View.GONE);
+                searchView.clearFocus();
+                return true;
+            }
+            @Override
+            public boolean onQueryTextChange(String newText) {
+                return false;
+            }
+        });
     }
+
+//    private void showDatePicker() {
+//        // Define the listener to handle date selection
+//        OnSelectDateListener listener = calendar -> {
+//            Calendar selectedDate = calendar.get(0);
+//            SimpleDateFormat format = new SimpleDateFormat("dd/MM/yyyy", Locale.getDefault());
+//            String dateString = format.format(selectedDate.getTime());
+//            Toast.makeText(CalendarActivity.this, "Selected Date: " + dateString, Toast.LENGTH_LONG).show();
+//        };
+//        // Build and show the date picker
+//        DatePickerBuilder builder = new DatePickerBuilder(this, listener)
+//                .pickerType(CalendarView.RANGE_PICKER);
+//        DatePicker datePicker = builder.build();
+//        datePicker.show();
+//    }
     private void getDailyQuote(){
-        StringBuilder stringBuilder = new StringBuilder();
         quoteHandler = new Handler(message -> {
             if(message.what == SUCCESS){
                 String responseData = message.getData().getString("data");
