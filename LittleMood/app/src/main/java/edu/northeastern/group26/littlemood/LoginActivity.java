@@ -24,6 +24,8 @@ public class LoginActivity extends AppCompatActivity {
 
     public void login(View view) {
         Toast.makeText(this, "Successfully log in", Toast.LENGTH_SHORT).show();
+        Intent intent = new Intent(this, CalendarActivity.class);
+        startActivity(intent);
     }
 
     public void openSignUp(View view) {

@@ -2,6 +2,7 @@ package edu.northeastern.group26.littlemood;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.view.View;
 import android.widget.Toast;
 
 import androidx.preference.PreferenceFragmentCompat;
@@ -38,5 +39,9 @@ public class SettingsFragment extends PreferenceFragmentCompat {
         });
     }
 
-
+    @Override
+    public void onViewCreated(View view, Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+        view.setBackgroundColor(getResources().getColor(R.color.light_yellow)); // Ensure you have light_yellow defined in your colors.xml
+    }
 }
