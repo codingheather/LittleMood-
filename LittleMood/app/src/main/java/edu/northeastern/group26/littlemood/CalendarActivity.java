@@ -57,9 +57,9 @@ public class CalendarActivity extends AppCompatActivity {
         // get daily quote(inspiring words) from API and update UI
         getDailyQuote();
 
-        // enter journal page
+        // enter mood page
         addJournalButton.setOnClickListener(view -> {
-            Intent intent = new Intent(this, JournalActivity.class);
+            Intent intent = new Intent(this, MoodActivity.class);
             startActivity(intent);
         });
 
@@ -81,7 +81,8 @@ public class CalendarActivity extends AppCompatActivity {
             Intent intent = new Intent(CalendarActivity.this, MoodActivity.class);
             // Extract the year, month, and day from the clicked CalendarDay
             int year = calendarDay.getCalendar().get(Calendar.YEAR);
-            int month = calendarDay.getCalendar().get(Calendar.MONTH);
+            // month is zero-based Indexing
+            int month = calendarDay.getCalendar().get(Calendar.MONTH) + 1;
             int day = calendarDay.getCalendar().get(Calendar.DAY_OF_MONTH);
             // Put the year, month, and day as extras in the intent
             intent.putExtra("YEAR", year);
