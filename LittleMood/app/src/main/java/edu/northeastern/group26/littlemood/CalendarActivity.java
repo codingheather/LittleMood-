@@ -2,8 +2,12 @@ package edu.northeastern.group26.littlemood;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.content.Context;
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.Canvas;
 import android.graphics.Paint;
+import android.graphics.Typeface;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
@@ -107,9 +111,7 @@ public class CalendarActivity extends AppCompatActivity {
     }
 
     private void setDay(CalendarView calendarView){
-        List<EventDay> events = new ArrayList<>();
-        // todo: show emojis from firebase
-
+        List<CalendarDay> events = new ArrayList<>();
         FirebaseUser user = mAuth.getCurrentUser();
         FirebaseDatabase database = FirebaseDatabase.getInstance();
         DatabaseReference myRef = database.getReference("JournalEntries");
@@ -126,10 +128,14 @@ public class CalendarActivity extends AppCompatActivity {
                     Date date;
                     try {
                         date = sdf.parse(userEntry.date);
+                        String emoji = userEntry.emoji;
                         Calendar day = Calendar.getInstance();
                         day.setTime(date);
-                        events.add(new EventDay(day, R.drawable.ic_smiling_face));
-                        calendarView.setEvents(events);
+                        Drawable emojiDrawable = emojiToDrawable(CalendarActivity.this, emoji, 100);
+                        CalendarDay calendarDay = new CalendarDay(day);
+                        calendarDay.setImageDrawable(emojiDrawable);
+                        events.add(calendarDay);
+                        calendarView.setCalendarDays(events);
                         System.out.println("Parsed date: " + date);
                     } catch (ParseException e) {
                         System.out.println("Error parsing the date.");
@@ -261,5 +267,22 @@ public class CalendarActivity extends AppCompatActivity {
             return e.toString();
         }
         return "Failed to fetch quote";
+    }
+
+    public Drawable emojiToDrawable(Context context, String emoji, int sizeInPixels) {
+        Paint paint = new Paint(Paint.ANTI_ALIAS_FLAG);
+        paint.setTextSize(sizeInPixels);
+        paint.setTypeface(Typeface.DEFAULT); // Set the typeface you want to use
+        paint.setTextAlign(Paint.Align.LEFT);
+
+        float baseline = -paint.ascent(); // ascent() is negative
+        int width = (int) (paint.measureText(emoji) + 0.5f); // round
+        int height = (int) (baseline + paint.descent() + 0.5f);
+
+        Bitmap image = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888);
+        Canvas canvas = new Canvas(image);
+        canvas.drawText(emoji, 0, baseline, paint);
+
+        return new BitmapDrawable(context.getResources(), image);
     }
 }
