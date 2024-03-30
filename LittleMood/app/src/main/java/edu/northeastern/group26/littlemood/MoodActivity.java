@@ -68,6 +68,13 @@ public class MoodActivity extends AppCompatActivity {
         img6.setOnClickListener(this::OnClick1);
         img7.setOnClickListener(this::OnClick1);
         img8.setOnClickListener(this::OnClick1);
+
+        close.setOnClickListener(this::OnClickClose);
+    }
+
+    private void OnClickClose(View view) {
+        Intent intent = new Intent(this, CalendarActivity.class);
+        startActivity(intent);
     }
 
     private void OnClick1(View view) {

@@ -51,7 +51,7 @@ public class JournalActivity extends AppCompatActivity {
         calendar.set(Calendar.MONTH, month - 1); // Set the month (0-based index)
         calendar.set(Calendar.DAY_OF_MONTH, day); // Set the day of the month
         // Format the date as "MMMM dd. EEE" (e.g., "March 24. Sat")
-        SimpleDateFormat dateFormat = new SimpleDateFormat("MMMM dd. EEE", Locale.getDefault());
+        SimpleDateFormat dateFormat = new SimpleDateFormat("MMMM dd. yyyy EEE", Locale.getDefault());
         timeTextView.setText(dateFormat.format(calendar.getTime()));
 
         TextView img1=findViewById(R.id.img1);
@@ -59,14 +59,14 @@ public class JournalActivity extends AppCompatActivity {
 
         ImageView ok = findViewById(R.id.ok);
         ok.setOnClickListener(new View.OnClickListener() {
-            FirebaseUser user = mAuth.getCurrentUser();
-            String date = ((TextView) findViewById(R.id.time)).getText().toString();
-            String emoji = ((TextView) findViewById(R.id.img1)).getText().toString();
-            String text = ((EditText) findViewById(R.id.add_content)).getText().toString();
-            String photo = "placeholder: for getting the index/id of the photo";
-            String email = user.getEmail();
             @Override
             public void onClick(View view) {
+                FirebaseUser user = mAuth.getCurrentUser();
+                String date = ((TextView) findViewById(R.id.time)).getText().toString();
+                String emoji = ((TextView) findViewById(R.id.img1)).getText().toString();
+                String text = ((EditText) findViewById(R.id.add_content)).getText().toString();
+                String photo = "placeholder: for getting the index/id of the photo";
+                String email = user.getEmail();
                 newEntry = new JournalEntry(date, emoji, text, photo, email);
                 firebaseUtil.saveJournalEntry(newEntry);
                 finish();

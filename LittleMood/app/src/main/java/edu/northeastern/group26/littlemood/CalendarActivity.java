@@ -3,6 +3,9 @@ package edu.northeastern.group26.littlemood;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
+import android.graphics.Paint;
+import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -16,6 +19,15 @@ import android.widget.Toast;
 import com.applandeo.materialcalendarview.CalendarDay;
 import com.applandeo.materialcalendarview.CalendarView;
 import com.applandeo.materialcalendarview.EventDay;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.Query;
+import com.google.firebase.database.ValueEventListener;
+
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -43,6 +55,7 @@ public class CalendarActivity extends AppCompatActivity {
     private TextView quoteTextView;
     private Handler quoteHandler;
     private static final int SUCCESS = 100;
+    private FirebaseAuth mAuth = FirebaseAuth.getInstance();
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -96,17 +109,41 @@ public class CalendarActivity extends AppCompatActivity {
     private void setDay(CalendarView calendarView){
         List<EventDay> events = new ArrayList<>();
         // todo: show emojis from firebase
-        // Happy day
-        Calendar happyDay = Calendar.getInstance();
-        happyDay.set(2024, Calendar.MARCH, 15);
-        events.add(new EventDay(happyDay, R.drawable.ic_smiling_face));
 
-        // Sad day
-        Calendar sadDay = Calendar.getInstance();
-        sadDay.set(2024, Calendar.MARCH, 20);
-        events.add(new EventDay(sadDay, R.drawable.ic_sad_face));
+        FirebaseUser user = mAuth.getCurrentUser();
+        FirebaseDatabase database = FirebaseDatabase.getInstance();
+        DatabaseReference myRef = database.getReference("JournalEntries");
 
-        calendarView.setEvents(events);
+        Query query = myRef.orderByChild("email").equalTo(user.getEmail());
+
+        query.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
+                    JournalEntry userEntry = snapshot.getValue(JournalEntry.class);
+
+                    SimpleDateFormat sdf = new SimpleDateFormat("MMMM dd. yyyy EEE");
+                    Date date;
+                    try {
+                        date = sdf.parse(userEntry.date);
+                        Calendar day = Calendar.getInstance();
+                        day.setTime(date);
+                        events.add(new EventDay(day, R.drawable.ic_smiling_face));
+                        calendarView.setEvents(events);
+                        System.out.println("Parsed date: " + date);
+                    } catch (ParseException e) {
+                        System.out.println("Error parsing the date.");
+                        e.printStackTrace();
+                    }
+
+                }
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+                // Handle possible errors.
+            }
+        });
     }
 
     private void showSearchedDate(SearchView searchView){
@@ -225,7 +262,4 @@ public class CalendarActivity extends AppCompatActivity {
         }
         return "Failed to fetch quote";
     }
-
-
-
-    }
+}
