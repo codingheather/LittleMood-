@@ -22,7 +22,6 @@ import android.widget.Toast;
 
 import com.applandeo.materialcalendarview.CalendarDay;
 import com.applandeo.materialcalendarview.CalendarView;
-import com.applandeo.materialcalendarview.EventDay;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
@@ -58,6 +57,8 @@ public class CalendarActivity extends AppCompatActivity {
     private SearchView searchInput;
     private TextView quoteTextView;
     private Handler quoteHandler;
+    private Calendar calendar;
+    private List<CalendarDay> events = new ArrayList<>(); // events on the calendar
     private static final int SUCCESS = 100;
     private FirebaseAuth mAuth = FirebaseAuth.getInstance();
     @Override
@@ -88,7 +89,6 @@ public class CalendarActivity extends AppCompatActivity {
 
         // define search activity
         searchIcon = findViewById(R.id.searchIcon);
-//        searchIcon.setOnClickListener(v -> showDatePicker());
         searchIcon.setOnClickListener(v -> showSearchedDate(searchInput));
 
         // show emojis under each date
@@ -111,7 +111,6 @@ public class CalendarActivity extends AppCompatActivity {
     }
 
     private void setDay(CalendarView calendarView){
-        List<CalendarDay> events = new ArrayList<>();
         FirebaseUser user = mAuth.getCurrentUser();
         FirebaseDatabase database = FirebaseDatabase.getInstance();
         DatabaseReference myRef = database.getReference("JournalEntries");
@@ -129,10 +128,10 @@ public class CalendarActivity extends AppCompatActivity {
                     try {
                         date = sdf.parse(userEntry.date);
                         String emoji = userEntry.emoji;
-                        Calendar day = Calendar.getInstance();
-                        day.setTime(date);
+                        calendar = Calendar.getInstance();
+                        calendar.setTime(date);
                         Drawable emojiDrawable = emojiToDrawable(CalendarActivity.this, emoji, 100);
-                        CalendarDay calendarDay = new CalendarDay(day);
+                        CalendarDay calendarDay = new CalendarDay(calendar);
                         calendarDay.setImageDrawable(emojiDrawable);
                         events.add(calendarDay);
                         calendarView.setCalendarDays(events);
@@ -153,6 +152,7 @@ public class CalendarActivity extends AppCompatActivity {
     }
 
     private void showSearchedDate(SearchView searchView){
+        searchView.setQueryHint("Enter month (YYYY-MM)");
         if (searchView.getVisibility() == View.GONE) {
             searchView.setVisibility(View.VISIBLE);
         } else {
@@ -161,25 +161,20 @@ public class CalendarActivity extends AppCompatActivity {
         searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
             public boolean onQueryTextSubmit(String query) {
-                SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault());
+                SimpleDateFormat format = new SimpleDateFormat("yyyy-MM", Locale.getDefault());
                 format.setLenient(false);
                 try {
                     Date date = format.parse(query);
-                    Calendar calendar = Calendar.getInstance();
                     if (date != null) {
+                        calendar = Calendar.getInstance();
                         calendar.setTime(date);
-                        Toast.makeText(CalendarActivity.this, "Selected date: " + query, Toast.LENGTH_SHORT).show();
+                        Toast.makeText(CalendarActivity.this, "Selected month: " + query, Toast.LENGTH_SHORT).show();
                         calendarView.setDate(date);
-                        List<CalendarDay> events = new ArrayList<>();
-                        CalendarDay searchedDay = new CalendarDay(calendar);
-                        searchedDay.setLabelColor(R.color.baby_blue);
-                        events.add(searchedDay);
-                        calendarView.setCalendarDays(events);
                     }
                 } catch (ParseException e) {
                     e.printStackTrace();
                     // Notify user about the wrong date format
-                    Toast.makeText(CalendarActivity.this, "Invalid date format. Please use YYYY-MM-DD.", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(CalendarActivity.this, "Invalid month format. Please use YYYY-MM.", Toast.LENGTH_SHORT).show();
                 }
                 searchView.setVisibility(View.GONE);
                 searchView.clearFocus();
@@ -192,20 +187,6 @@ public class CalendarActivity extends AppCompatActivity {
         });
     }
 
-//    private void showDatePicker() {
-//        // Define the listener to handle date selection
-//        OnSelectDateListener listener = calendar -> {
-//            Calendar selectedDate = calendar.get(0);
-//            SimpleDateFormat format = new SimpleDateFormat("dd/MM/yyyy", Locale.getDefault());
-//            String dateString = format.format(selectedDate.getTime());
-//            Toast.makeText(CalendarActivity.this, "Selected Date: " + dateString, Toast.LENGTH_LONG).show();
-//        };
-//        // Build and show the date picker
-//        DatePickerBuilder builder = new DatePickerBuilder(this, listener)
-//                .pickerType(CalendarView.RANGE_PICKER);
-//        DatePicker datePicker = builder.build();
-//        datePicker.show();
-//    }
     private void getDailyQuote(){
         quoteHandler = new Handler(message -> {
             if(message.what == SUCCESS){
