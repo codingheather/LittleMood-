@@ -56,6 +56,7 @@ public class CalendarActivity extends AppCompatActivity {
     private ImageView addJournalButton;
     private ImageView searchIcon;
     private ImageView settingIcon;
+    private ImageView statisticIcon;
     private CalendarView calendarView;
     private SearchView searchInput;
     private TextView quoteTextView;
@@ -74,7 +75,7 @@ public class CalendarActivity extends AppCompatActivity {
         settingIcon = findViewById(R.id.settingsIcon);
         quoteTextView = findViewById(R.id.inspiringWordsTextView);
         searchInput = findViewById(R.id.searchView);
-
+        statisticIcon = findViewById(R.id.chartIcon);
         // get daily quote(inspiring words) from API and update UI
         getDailyQuote();
 
@@ -89,6 +90,13 @@ public class CalendarActivity extends AppCompatActivity {
             Intent intent = new Intent(this, SettingsActivity.class);
             startActivity(intent);
         });
+
+        // enter statistic page
+        statisticIcon.setOnClickListener(view -> {
+            Intent intent = new Intent(this, StatisticActivity.class);
+            startActivity(intent);
+        });
+
 
         // define search activity
         searchIcon = findViewById(R.id.searchIcon);
@@ -119,6 +127,7 @@ public class CalendarActivity extends AppCompatActivity {
                             intent[0] = new Intent(CalendarActivity.this, JournalActivity.class);
                             intent[0].putExtra("name", userSnapshot.child("emoji").getValue(String.class));
                             intent[0].putExtra("text", userSnapshot.child("text").getValue(String.class));
+                            intent[0].putExtra("photo", userSnapshot.child("photo").getValue(String.class));
                         }
                     }
 
@@ -194,7 +203,7 @@ public class CalendarActivity extends AppCompatActivity {
     }
 
     private void showSearchedDate(SearchView searchView){
-        searchView.setQueryHint("Enter month (YYYY-MM)");
+        searchView.setQueryHint("YYYY-MM");
         if (searchView.getVisibility() == View.GONE) {
             searchView.setVisibility(View.VISIBLE);
         } else {
