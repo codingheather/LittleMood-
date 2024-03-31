@@ -106,9 +106,9 @@ public class JournalActivity extends AppCompatActivity {
                 String emoji = ((TextView) findViewById(R.id.img1)).getText().toString();
                 String text = ((EditText) findViewById(R.id.add_content)).getText().toString();
                 String email = user.getEmail();
-                // 这里还需要改。如果不是null，就不是new entry，是更改已有entry，或者删掉之前的entry
                 newEntry = new JournalEntry(date, emoji, text, photoUrl, email);
-                firebaseUtil.saveJournalEntry(newEntry);
+                // overwrite if data with same date and email already exist, otherwise insert new
+                firebaseUtil.overwriteJournalEntry(email, date, newEntry);
                 Intent intent = new Intent(getApplicationContext(), CalendarActivity.class);
                 startActivity(intent);
             }
