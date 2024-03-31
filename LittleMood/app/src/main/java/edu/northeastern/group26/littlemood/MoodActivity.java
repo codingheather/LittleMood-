@@ -39,7 +39,6 @@ public class MoodActivity extends AppCompatActivity {
     private ImageView close;
     private LinearLayout wait,all;
 
-
     public static ArrayList<Emoji> arrayList=new ArrayList<>();
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -79,21 +78,21 @@ public class MoodActivity extends AppCompatActivity {
 
     private void OnClick1(View view) {
         Intent intent = new Intent(MoodActivity.this, JournalActivity.class);
-        if(view.getId()==R.id.img1){
+        if (view.getId()==R.id.img1) {
             intent.putExtra("name", img1.getText().toString());
-        }else if(view.getId()==R.id.img2){
+        } else if (view.getId()==R.id.img2) {
             intent.putExtra("name", img2.getText().toString());
-        }else if(view.getId()==R.id.img3){
+        } else if(view.getId()==R.id.img3){
             intent.putExtra("name", img3.getText().toString());
-        }else if(view.getId()==R.id.img4){
+        } else if(view.getId() == R.id.img4){
             intent.putExtra("name", img4.getText().toString());
-        }else if(view.getId()==R.id.img5){
+        } else if(view.getId() == R.id.img5){
             intent.putExtra("name", img5.getText().toString());
-        }else if(view.getId()==R.id.img6){
+        } else if(view.getId() == R.id.img6){
             intent.putExtra("name", img6.getText().toString());
-        }else if(view.getId()==R.id.img7){
+        } else if(view.getId() == R.id.img7){
             intent.putExtra("name", img7.getText().toString());
-        }else if(view.getId()==R.id.img8){
+        } else if(view.getId() == R.id.img8){
             intent.putExtra("name", img8.getText().toString());
         }
         // Retrieve the data from the intent
@@ -110,41 +109,42 @@ public class MoodActivity extends AppCompatActivity {
     Handler myhandler=new Handler(new Handler.Callback() {
         @Override
         public boolean handleMessage(@NonNull Message message) {
-            if(message.what==SUCCESS){
+            if(message.what == SUCCESS){
 
                 String s=message.getData().getString("data");
                 System.out.println("data="+s);
                 try {
                     JSONArray jsonArray=new JSONArray(s) ;
-                    for(int i=0;i<jsonArray.length();i++){
+                    for (int i=0; i<jsonArray.length(); i++){
                         JSONObject jsonObject = jsonArray.getJSONObject(i);
-                        Emoji item = new Emoji(jsonObject.optString("slug"), jsonObject.optString("character")
-                                , jsonObject.optString("group") , jsonObject.optString("subGroup"));
+                        Emoji item = new Emoji(jsonObject.optString("slug"),
+                                jsonObject.optString("character"),
+                                jsonObject.optString("group"),
+                                jsonObject.optString("subGroup"));
 
-                        if(item.getSubGroup().equals("face-smiling") ){
+                        if (item.getSubGroup().equals("face-smiling") ){
                         }
                         arrayList.add(item);
                         Log.d("JsonToEntity:", item.toString());
                     }
 
-                    for (Emoji e:arrayList
-                    ) {
+                    for (Emoji e:arrayList) {
                         System.out.println(e.toString());
-                        if(e.getSlug().equals("e1-0-grinning-face")){
+                        if (e.getSlug().equals("e1-0-grinning-face")){
                             img1.setText(e.getCharacter());
-                        }else if(e.getSlug().equals("e0-6-grinning-face-with-sweat")){
+                        } else if (e.getSlug().equals("e0-6-grinning-face-with-sweat")){
                             img2.setText(e.getCharacter());
-                        }else if(e.getSlug().equals("e0-6-face-with-tears-of-joy")){
+                        } else if (e.getSlug().equals("e0-6-face-with-tears-of-joy")){
                             img3.setText(e.getCharacter());
-                        }else if(e.getSlug().equals("e0-7-frowning-face")){
+                        } else if (e.getSlug().equals("e0-7-frowning-face")){
                             img4.setText(e.getCharacter());
-                        }else if(e.getSlug().equals("e0-6-winking-face")){
+                        } else if (e.getSlug().equals("e0-6-winking-face")){
                             img5.setText(e.getCharacter());
-                        }else if(e.getSlug().equals("e1-0-smiling-face-with-halo")){
+                        } else if (e.getSlug().equals("e1-0-smiling-face-with-halo")){
                             img6.setText(e.getCharacter());
-                        }else if(e.getSlug().equals("e0-6-beaming-face-with-smiling-eyes")){
+                        } else if (e.getSlug().equals("e0-6-beaming-face-with-smiling-eyes")){
                             img7.setText(e.getCharacter());
-                        }else if(e.getSlug().equals("e0-6-loudly-crying-face")){
+                        } else if (e.getSlug().equals("e0-6-loudly-crying-face")){
                             img8.setText(e.getCharacter());
                         }
                     }
@@ -183,7 +183,7 @@ public class MoodActivity extends AppCompatActivity {
             String url1="https://emoji-api.com/categories/smileys-emotion?access_key=6593596d7d910ecc406aa4d589a1ccf566373406";
             URL url=new URL(url1);
             HttpURLConnection connection = (HttpURLConnection)url.openConnection();
-            if(connection.getResponseCode()==200){
+            if (connection.getResponseCode() == 200) {
                 InputStream inputStream = connection.getInputStream();
                 BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(inputStream, "UTF-8"));
                 StringBuilder stringBuilder=new StringBuilder();
@@ -196,7 +196,7 @@ public class MoodActivity extends AppCompatActivity {
                 connection.disconnect();
                 return stringBuilder.toString();
             }
-        }catch (Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
             return  e.toString();
         }

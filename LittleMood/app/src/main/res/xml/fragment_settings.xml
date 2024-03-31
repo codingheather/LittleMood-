@@ -38,9 +38,9 @@
         android:summary="Clear all app data and settings" />
 
     <Preference
-        android:key="cancel_account"
-        android:title="Cancel Account"
-        android:summary="Cancel the account and everything" />
+        android:key="delete_account"
+        android:title="Delete Account"
+        android:summary="Delete the account and everything" />
 
 
 </PreferenceScreen>
