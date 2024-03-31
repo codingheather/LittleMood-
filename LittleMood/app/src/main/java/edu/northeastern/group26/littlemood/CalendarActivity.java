@@ -119,6 +119,7 @@ public class CalendarActivity extends AppCompatActivity {
                             intent[0] = new Intent(CalendarActivity.this, JournalActivity.class);
                             intent[0].putExtra("name", userSnapshot.child("emoji").getValue(String.class));
                             intent[0].putExtra("text", userSnapshot.child("text").getValue(String.class));
+                            intent[0].putExtra("photo", userSnapshot.child("photo").getValue(String.class));
                         }
                     }
 
