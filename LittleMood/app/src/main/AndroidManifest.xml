@@ -19,6 +19,9 @@
         android:theme="@style/Theme.LittleMood"
         tools:targetApi="31">
         <activity
+            android:name=".StatisticActivity"
+            android:exported="false" />
+        <activity
             android:name=".CameraActivity"
             android:exported="false" />
         <activity
@@ -29,7 +32,7 @@
             android:exported="false" />
         <activity
             android:name=".MoodActivity"
-            android:exported="true"></activity>
+            android:exported="true" />
         <activity android:name=".SettingsActivity" />
         <activity
             android:name=".LoginActivity"
@@ -43,7 +46,7 @@
         <activity android:name=".SignUpActivity" />
         <activity
             android:name=".CalendarActivity"
-            android:windowSoftInputMode="adjustPan|stateHidden"></activity>
+            android:windowSoftInputMode="adjustPan|stateHidden" />
     </application>
 
 </manifest>
