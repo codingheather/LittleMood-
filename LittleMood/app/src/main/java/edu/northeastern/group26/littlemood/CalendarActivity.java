@@ -1,5 +1,8 @@
 package edu.northeastern.group26.littlemood;
 
+import static android.content.ContentValues.TAG;
+
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Context;
@@ -95,18 +98,57 @@ public class CalendarActivity extends AppCompatActivity {
         setDay(calendarView);
 
         calendarView.setOnCalendarDayClickListener(calendarDay -> {
-            Intent intent = new Intent(CalendarActivity.this, MoodActivity.class);
-            // Extract the year, month, and day from the clicked CalendarDay
-            int year = calendarDay.getCalendar().get(Calendar.YEAR);
-            // month is zero-based Indexing
-            int month = calendarDay.getCalendar().get(Calendar.MONTH) + 1;
-            int day = calendarDay.getCalendar().get(Calendar.DAY_OF_MONTH);
-            // Put the year, month, and day as extras in the intent
-            intent.putExtra("YEAR", year);
-            intent.putExtra("MONTH", month);
-            intent.putExtra("DAY", day);
 
-            startActivity(intent);
+            FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+            final Intent[] intent = new Intent[1];
+
+            assert user != null;
+
+            SimpleDateFormat dateFormat = new SimpleDateFormat("MMMM dd. yyyy EEE", Locale.getDefault());
+
+            String calendarDate = dateFormat.format(calendarDay.getCalendar().getTime());
+
+            DatabaseReference ref = FirebaseDatabase.getInstance().getReference();
+            Query userQuery = ref.child("JournalEntries").orderByChild("email").equalTo(user.getEmail());
+
+            userQuery.addListenerForSingleValueEvent(new ValueEventListener() {
+                @Override
+                public void onDataChange(DataSnapshot dataSnapshot) {
+                    for (DataSnapshot userSnapshot: dataSnapshot.getChildren()) {
+                        if (userSnapshot.child("date").getValue(String.class).equals(calendarDate)) {
+                            intent[0] = new Intent(CalendarActivity.this, JournalActivity.class);
+                            intent[0].putExtra("name", userSnapshot.child("emoji").getValue(String.class));
+                            intent[0].putExtra("text", userSnapshot.child("text").getValue(String.class));
+                        }
+                    }
+
+                    if (intent[0] == null){
+                        intent[0] = new Intent(CalendarActivity.this, MoodActivity.class);
+                    }
+
+                    // Extract the year, month, and day from the clicked CalendarDay
+                    int year = calendarDay.getCalendar().get(Calendar.YEAR);
+                    // month is zero-based Indexing
+                    int month = calendarDay.getCalendar().get(Calendar.MONTH) + 1;
+                    int day = calendarDay.getCalendar().get(Calendar.DAY_OF_MONTH);
+
+                    // Put the year, month, emoji, and day as extras in the intent
+                    intent[0].putExtra("YEAR", year);
+                    intent[0].putExtra("MONTH", month);
+                    intent[0].putExtra("DAY", day);
+
+
+                    startActivity(intent[0]);
+
+                }
+
+                @Override
+                public void onCancelled(DatabaseError databaseError) {
+                    Log.e(TAG, "onCancelled", databaseError.toException());
+                }
+            });
+
+
         });
     }
 
