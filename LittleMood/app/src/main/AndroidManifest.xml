@@ -2,6 +2,9 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools">
 
+    <uses-feature android:name="android.hardware.camera.any" />
+
+    <uses-permission android:name="android.permission.CAMERA" />
     <uses-permission android:name="android.permission.INTERNET" />
 
     <application
@@ -16,6 +19,9 @@
         android:theme="@style/Theme.LittleMood"
         tools:targetApi="31">
         <activity
+            android:name=".CameraActivity"
+            android:exported="false" />
+        <activity
             android:name=".JournalActivity"
             android:exported="false" />
         <activity
@@ -23,24 +29,21 @@
             android:exported="false" />
         <activity
             android:name=".MoodActivity"
-            android:exported="true">
-
-        </activity>
-        <activity android:name=".SettingsActivity"></activity>
+            android:exported="true"></activity>
+        <activity android:name=".SettingsActivity" />
         <activity
             android:name=".LoginActivity"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
+
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".SignUpActivity"></activity>
+        <activity android:name=".SignUpActivity" />
         <activity
             android:name=".CalendarActivity"
-            android:windowSoftInputMode="adjustPan|stateHidden"
-            >
-        </activity>
+            android:windowSoftInputMode="adjustPan|stateHidden"></activity>
     </application>
 
 </manifest>

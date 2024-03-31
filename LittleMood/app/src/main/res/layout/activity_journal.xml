@@ -7,6 +7,7 @@
     android:orientation="vertical"
     android:background="@color/light_yellow"
     tools:context=".JournalActivity">
+
     <TextView
         android:id="@+id/time"
         android:layout_width="match_parent"
@@ -49,12 +50,6 @@
                 android:padding="10dp"
                 android:text="Record Your Day !"
                 android:textSize="20sp" />
-
-            <ImageView
-                android:layout_width="30dp"
-                android:layout_gravity="center"
-                android:layout_height="30dp"
-                android:src="@drawable/photo"/>
         </LinearLayout>
 
         <EditText
@@ -79,10 +74,7 @@
             android:id="@+id/img"
             android:layout_width="110dp"
             android:layout_height="110dp"
-            android:src="@drawable/def"/>
-
-
-
+            android:src="@drawable/photo"/>
     </LinearLayout>
 
 
