@@ -27,6 +27,44 @@ public class FirebaseUtil {
         newEntryRef.setValue(journalEntry);
     }
 
+
+    public void delJournalEntry(String email, String date, JournalEntry journalEntry) {
+
+        Query query = databaseReference.orderByChild("email").equalTo(email);
+        query.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                boolean entryFoundAndOverwritten = false;
+                for (DataSnapshot childSnapshot: dataSnapshot.getChildren()) {
+                    String entryDate = childSnapshot.child("date").getValue(String.class);
+                    if (date.equals(entryDate)) {
+                        // Overwrite the old entry with the new data
+                        String oldId = childSnapshot.getKey();
+                        journalEntry.journalId = oldId;
+                        databaseReference.child(childSnapshot.getKey()).removeValue();
+                        entryFoundAndOverwritten = true;
+                        break;
+                    }
+                }
+                if (!entryFoundAndOverwritten) {
+                    // Push the new entry, which auto-generates a unique ID
+                    DatabaseReference newEntryRef = databaseReference.push();
+
+                    // If you want to store the generated ID inside the object as well
+                    journalEntry.journalId = newEntryRef.getKey();
+
+                    newEntryRef.removeValue();
+                }
+            }
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+            }
+        });
+
+
+    }
+
+
     public void overwriteJournalEntry(String email, String date, JournalEntry journalEntry) {
         // Query to find the existing email
         Query query = databaseReference.orderByChild("email").equalTo(email);

@@ -110,14 +110,18 @@ public class CalendarActivity extends AppCompatActivity {
             FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
             final Intent[] intent = new Intent[1];
 
-            assert user != null;
+//            assert user != null;
 
             SimpleDateFormat dateFormat = new SimpleDateFormat("MMMM dd. yyyy EEE", Locale.getDefault());
 
             String calendarDate = dateFormat.format(calendarDay.getCalendar().getTime());
 
             DatabaseReference ref = FirebaseDatabase.getInstance().getReference();
-            Query userQuery = ref.child("JournalEntries").orderByChild("email").equalTo(user.getEmail());
+
+
+//            Query userQuery = ref.child("JournalEntries").orderByChild("email").equalTo(user.getEmail());
+//            Query userQuery = ref.child("JournalEntries").orderByChild("email").equalTo("1111@11.com");
+            Query userQuery = ref.child("JournalEntries").orderByChild("email");
 
             userQuery.addListenerForSingleValueEvent(new ValueEventListener() {
                 @Override
@@ -163,10 +167,16 @@ public class CalendarActivity extends AppCompatActivity {
 
     private void setDay(CalendarView calendarView){
         FirebaseUser user = mAuth.getCurrentUser();
+        Log.i(TAG, "setDaysetDaysetDay: "+user);
+
+
+
         FirebaseDatabase database = FirebaseDatabase.getInstance();
         DatabaseReference myRef = database.getReference("JournalEntries");
 
-        Query query = myRef.orderByChild("email").equalTo(user.getEmail());
+        Query query = myRef.orderByChild("email");
+
+//        .equalTo(user.getEmail())
 
         query.addValueEventListener(new ValueEventListener() {
             @Override
@@ -186,6 +196,8 @@ public class CalendarActivity extends AppCompatActivity {
                         calendarDay.setImageDrawable(emojiDrawable);
                         events.add(calendarDay);
                         calendarView.setCalendarDays(events);
+                        Log.i(TAG, "onDataChange: "+emoji);
+
                         System.out.println("Parsed date: " + date);
                     } catch (ParseException e) {
                         System.out.println("Error parsing the date.");

@@ -7,6 +7,7 @@ public class JournalEntry {
     public String text;
     public String photo; // This will be the id/index to the photo in Firebase Storage (see sticker project)
     public String email;
+    public int  emailNum=1;
 
     // Default constructor is required for Firebase
     public JournalEntry() {

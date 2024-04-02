@@ -114,6 +114,24 @@ public class JournalActivity extends AppCompatActivity {
             }
         });
 
+
+        findViewById(R.id.delete).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                FirebaseUser user = mAuth.getCurrentUser();
+                String date = ((TextView) findViewById(R.id.time)).getText().toString();
+                String emoji = ((TextView) findViewById(R.id.img1)).getText().toString();
+                String text = ((EditText) findViewById(R.id.add_content)).getText().toString();
+                String email = user.getEmail();
+                newEntry = new JournalEntry(date, emoji, text, photoUrl, email);
+                firebaseUtil.delJournalEntry(email, date, newEntry);
+                Intent intent = new Intent(getApplicationContext(), CalendarActivity.class);
+                startActivity(intent);
+
+            }
+        });
+
+
         ImageView close=findViewById(R.id.close);
         close.setOnClickListener(new View.OnClickListener() {
             @Override

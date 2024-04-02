@@ -99,4 +99,12 @@
             android:layout_height="40dp"
             android:src="@drawable/close"/>
     </LinearLayout>
+
+    <ImageView
+        android:layout_width="40dp"
+        android:layout_gravity="center"
+        android:layout_weight="1"
+        android:id="@+id/delete"
+        android:layout_height="40dp"
+        android:src="@drawable/close"/>
 </LinearLayout>

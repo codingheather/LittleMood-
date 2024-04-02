@@ -3,6 +3,7 @@ plugins {
 
     // Add the Google services Gradle plugin
     id("com.google.gms.google-services")
+
 }
 
 android {
