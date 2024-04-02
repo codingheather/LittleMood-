@@ -100,6 +100,9 @@ public class MoodActivity extends AppCompatActivity {
         int month = getIntent().getIntExtra("MONTH", -1);
         int day = getIntent().getIntExtra("DAY", -1);
 
+        intent.putExtra("text", getIntent().getStringExtra("text"));
+        intent.putExtra("photo", getIntent().getStringExtra("photo"));
+
         intent.putExtra("YEAR", year);
         intent.putExtra("MONTH", month);
         intent.putExtra("DAY", day);
