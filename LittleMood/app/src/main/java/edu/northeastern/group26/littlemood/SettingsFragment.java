@@ -205,34 +205,21 @@ public class SettingsFragment extends PreferenceFragmentCompat {
         view.setBackgroundColor(getResources().getColor(R.color.light_yellow)); // Ensure you have light_yellow defined in your colors.xml
     }
 
-    public void sendNotification() {
+    private void addNotification() {
+        NotificationCompat.Builder builder =
+                new NotificationCompat.Builder(getContext(), CHANNEL_ID)
+                        .setSmallIcon(R.drawable.bell)
+                        .setContentTitle("Notification")
+                        .setContentText("Notification enabled!");
 
-        // Prepare intent which is triggered if the
-        // notification is selected
-        Intent intent = new Intent(getContext(), ReceiveNotificationActivity.class);
-        PendingIntent pIntent = PendingIntent.getActivity(getContext(), (int) System.currentTimeMillis(), intent, 0);
-        PendingIntent callIntent = PendingIntent.getActivity(this, (int) System.currentTimeMillis(),
-                new Intent(this, FakeCallActivity.class), 0);
+        Intent notificationIntent = new Intent(getActivity(), MainActivity.class);
+        PendingIntent contentIntent = PendingIntent.getActivity(getContext(), 0, notificationIntent,
+                PendingIntent.FLAG_IMMUTABLE);
+        builder.setContentIntent(contentIntent);
 
-
-        // Build notification
-        // Need to define a channel ID after Android Oreo
-        String channelId = getString(R.string.channel_id);
-        NotificationCompat.Builder notifyBuild = new NotificationCompat.Builder(this, channelId)
-                //"Notification icons must be entirely white."
-                .setSmallIcon(R.drawable.foo)
-                .setContentTitle("New mail from " + "test@test.com")
-                .setContentText("Subject")
-                .setPriority(NotificationCompat.PRIORITY_HIGH)
-                // hide the notification after its selected
-                .setAutoCancel(true)
-                .addAction(R.drawable.foo, "Call", callIntent)
-                .setContentIntent(pIntent);
-
-        NotificationManagerCompat notificationManager = NotificationManagerCompat.from(this);
-        // // notificationId is a unique int for each notification that you must define
-        notificationManager.notify(0, notifyBuild.build());
-
+        // Add as notification
+        NotificationManager manager = (NotificationManager) getActivity().getSystemService(Context.NOTIFICATION_SERVICE);
+        manager.notify(0, builder.build());
     }
 
     public void createNotificationChannel() {
