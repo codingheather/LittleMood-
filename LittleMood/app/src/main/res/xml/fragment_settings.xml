@@ -1,16 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
 
-    <EditTextPreference
-        android:key="email"
-        android:title="Email"
-        android:summary="Enter your email"
-        android:dialogTitle="Set your email" />
-
     <CheckBoxPreference
-        android:key="email_notifications"
-        android:title="Enable email notifications"
-        android:summary="Check to enable email notifications" />
+        android:key="update_notifications"
+        android:title="Notification Settings"
+        android:summary="Check to enable notifications" />
 
     <Preference
         android:key="change_password"
@@ -21,11 +15,6 @@
         android:key="change_username"
         android:title="Change Username"
         android:summary="Update your username" />
-
-    <Preference
-        android:key="update_notifications"
-        android:title="Notification Settings"
-        android:summary="Configure your notification preferences" />
 
     <Preference
         android:key="logout"
