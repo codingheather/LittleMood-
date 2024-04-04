@@ -90,17 +90,20 @@ public class SettingsFragment extends PreferenceFragmentCompat {
                             .addOnCompleteListener(task -> {
                                 if (task.isSuccessful()) {
                                     Log.d("PasswordUpdate", "User password updated.");
+                                    Toast.makeText(getActivity(), "Successfully changed password", Toast.LENGTH_SHORT).show();
                                 }
                             });
                 } else {
                     Toast.makeText(getActivity(), "check your new password", Toast.LENGTH_SHORT).show();
                 }
+            }).setNegativeButton("Back", (dialog, id) -> {
+                dialog.dismiss();
             });
 
             AlertDialog dialog = builder.create();
             dialog.show();
 
-            Toast.makeText(getActivity(), "Successfully changed password", Toast.LENGTH_SHORT).show();
+
             return true;
         });
 
@@ -123,14 +126,18 @@ public class SettingsFragment extends PreferenceFragmentCompat {
                         .addOnCompleteListener(task -> {
                             if (task.isSuccessful()) {
                                 Log.d("EmailUpdate", "User email updated.");
+                                Toast.makeText(getActivity(), "Successfully changed username", Toast.LENGTH_SHORT).show();
                             }
                         });
-            });
+            })
+                    .setNegativeButton("Back", (dialog, id) -> {
+                        dialog.dismiss(); 
+                    });
 
             AlertDialog dialog = builder.create();
             dialog.show();
 
-            Toast.makeText(getActivity(), "Successfully changed username", Toast.LENGTH_SHORT).show();
+
             return true;
         });
 
