@@ -23,10 +23,8 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
-import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.Query;
-import com.google.firebase.database.ValueEventListener;
+
+import androidx.recyclerview.widget.RecyclerView;
 
 public class StatisticActivity extends AppCompatActivity {
     private RecyclerView recyclerView;
@@ -106,7 +104,6 @@ public class StatisticActivity extends AppCompatActivity {
     }
 
 
-
-
+    }
 
 }

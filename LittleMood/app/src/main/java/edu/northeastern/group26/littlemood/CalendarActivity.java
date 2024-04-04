@@ -111,6 +111,7 @@ public class CalendarActivity extends AppCompatActivity {
             final Intent[] intent = new Intent[1];
 
 //            assert user != null;
+            assert user != null;
 
             SimpleDateFormat dateFormat = new SimpleDateFormat("MMMM dd. yyyy EEE", Locale.getDefault());
 
@@ -118,10 +119,10 @@ public class CalendarActivity extends AppCompatActivity {
 
             DatabaseReference ref = FirebaseDatabase.getInstance().getReference();
 
-
 //            Query userQuery = ref.child("JournalEntries").orderByChild("email").equalTo(user.getEmail());
 //            Query userQuery = ref.child("JournalEntries").orderByChild("email").equalTo("1111@11.com");
             Query userQuery = ref.child("JournalEntries").orderByChild("email");
+            Query userQuery = ref.child("JournalEntries").orderByChild("email").equalTo(user.getEmail());
 
             userQuery.addListenerForSingleValueEvent(new ValueEventListener() {
                 @Override

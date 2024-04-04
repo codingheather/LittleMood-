@@ -66,6 +66,23 @@ public class JournalActivity extends AppCompatActivity {
         TextView img1=findViewById(R.id.img1);
         img1.setText(name);
 
+        //update emoji of an existing journal entry
+        img1.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View v) {
+                Intent intent = new Intent(getApplicationContext(), MoodActivity.class);
+                int year = getIntent().getIntExtra("YEAR", -1);
+                int month = getIntent().getIntExtra("MONTH", -1);
+                int day = getIntent().getIntExtra("DAY", -1);
+                intent.putExtra("YEAR", year);
+                intent.putExtra("MONTH", month);
+                intent.putExtra("DAY", day);
+                intent.putExtra("name", getIntent().getStringExtra("name"));
+                intent.putExtra("text", textInput.getText().toString());
+                intent.putExtra("photo", photoUrl);
+                startActivity(intent);
+            }
+        });
+
         // Capture image when captureButton is clicked
         ImageView captureButton = (ImageView) findViewById(R.id.img);
         if (photoUrl != null && !photoUrl.isEmpty()) {
@@ -78,6 +95,7 @@ public class JournalActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 Log.d("heather", "no code");
+              
                 File file = new File(getExternalFilesDir(Environment.DIRECTORY_PICTURES), "image.jpg");
                 ImageCapture.OutputFileOptions outputFileOptions = new ImageCapture.OutputFileOptions.Builder(file).build();
 

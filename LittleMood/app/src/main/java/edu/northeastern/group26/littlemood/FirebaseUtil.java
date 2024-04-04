@@ -27,7 +27,6 @@ public class FirebaseUtil {
         newEntryRef.setValue(journalEntry);
     }
 
-
     public void delJournalEntry(String email, String date, JournalEntry journalEntry) {
 
         Query query = databaseReference.orderByChild("email").equalTo(email);
@@ -63,7 +62,6 @@ public class FirebaseUtil {
 
 
     }
-
 
     public void overwriteJournalEntry(String email, String date, JournalEntry journalEntry) {
         // Query to find the existing email
