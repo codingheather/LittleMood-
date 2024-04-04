@@ -2,21 +2,22 @@
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="wrap_content"
-    android:layout_height="wrap_content">
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
 
 
     <TextView
         android:id="@+id/cpw"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="212dp"
         android:text="Current Password: "
         android:textSize="20sp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintBottom_toTopOf="@+id/npw"
+        app:layout_constraintEnd_toStartOf="@+id/CurrentPw"
+        app:layout_constraintHorizontal_bias="1.0"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.8" />
 
     <EditText
         android:id="@+id/CurrentPw"
@@ -24,12 +25,12 @@
         android:layout_height="50dp"
         android:hint="Current Password"
         android:inputType="textPassword"
-        app:layout_constraintBottom_toTopOf="@+id/npw"
+        app:layout_constraintBottom_toTopOf="@+id/NewPw"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintHorizontal_bias="0.867"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/cpw"
-        app:layout_constraintVertical_bias="0.469" />
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.888" />
 
     <TextView
         android:id="@+id/npw"
@@ -37,48 +38,52 @@
         android:layout_height="wrap_content"
         android:text="New Password: "
         android:textSize="20sp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintBottom_toTopOf="@+id/cnp"
+        app:layout_constraintEnd_toStartOf="@+id/NewPw"
+        app:layout_constraintHorizontal_bias="0.271"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.465" />
+        app:layout_constraintVertical_bias="0.872" />
 
     <EditText
         android:id="@+id/NewPw"
         android:layout_width="180dp"
         android:layout_height="50dp"
+        android:layout_marginEnd="4dp"
         android:hint="New Password"
         android:inputType="textPassword"
-        app:layout_constraintBottom_toTopOf="@+id/cnp"
+        app:layout_constraintBottom_toTopOf="@+id/ConfirmNewPw"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.894"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/npw" />
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.933" />
 
     <TextView
         android:id="@+id/cnp"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Confirm New Password: "
+        android:text="Confirm Password: "
         android:textSize="20sp"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintEnd_toStartOf="@+id/ConfirmNewPw"
+        app:layout_constraintHorizontal_bias="1.0"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.625" />
+        app:layout_constraintVertical_bias="0.447" />
 
     <EditText
         android:id="@+id/ConfirmNewPw"
-        android:layout_width="280dp"
+        android:layout_width="220dp"
         android:layout_height="50dp"
-        android:hint="Confirm New Password"
+        android:hint="Confirm Password"
         android:inputType="textPassword"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintHorizontal_bias="0.916"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/cnp"
-        app:layout_constraintVertical_bias="0.132" />
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.449" />
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>

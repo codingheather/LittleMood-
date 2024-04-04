@@ -1,5 +1,6 @@
 package edu.northeastern.group26.littlemood;
 
+import android.Manifest;
 import android.app.AlertDialog;
 import android.app.Notification;
 import android.app.NotificationChannel;
@@ -13,6 +14,8 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.widget.CheckBox;
+import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.Toast;
 
@@ -20,6 +23,8 @@ import androidx.annotation.NonNull;
 import androidx.core.app.ActivityCompat;
 import androidx.core.app.NotificationCompat;
 import androidx.core.app.NotificationManagerCompat;
+import androidx.preference.CheckBoxPreference;
+import androidx.preference.Preference;
 import androidx.preference.PreferenceFragmentCompat;
 
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -35,17 +40,33 @@ import com.google.firebase.database.ValueEventListener;
 
 public class SettingsFragment extends PreferenceFragmentCompat {
     private static final String CHANNEL_ID = "settings notif";
+    private static final int PERMISSION_REQUEST_CODE = 112;
 
     @Override
     public void onCreatePreferences(Bundle savedInstanceState, String rootKey) {
         setPreferencesFromResource(R.xml.fragment_settings, rootKey);
+        createNotificationChannel();
 
-        findPreference("update_notifications").setOnPreferenceClickListener(preference -> {
-            createNotificationChannel();
-            addNotification();
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            if (ActivityCompat.checkSelfPermission(getContext(), android.Manifest.permission.POST_NOTIFICATIONS) != PackageManager.PERMISSION_GRANTED) {
+                ActivityCompat.requestPermissions(getActivity(), new String[]{Manifest.permission.POST_NOTIFICATIONS}, PERMISSION_REQUEST_CODE);
+            }
+        }
 
-            return true;
+        CheckBoxPreference notificationCheckBox = findPreference("update_notifications");
+        notificationCheckBox.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
+            @Override
+            public boolean onPreferenceChange(@NonNull Preference preference, Object newValue) {
+                boolean isChecked = (boolean) newValue;
+                if (isChecked) {
+                    addNotification();
+                } else {
+                    stopPushingNotification();
+                }
+                return true;
+            }
         });
+
 
         findPreference("change_password").setOnPreferenceClickListener(preference -> {
             // edit password in firebase
@@ -223,19 +244,42 @@ public class SettingsFragment extends PreferenceFragmentCompat {
     }
 
     public void createNotificationChannel() {
-        // This must be called early because it must be called before a notification is sent.
-        // Create the NotificationChannel, but only on API 26+ because
-        // the NotificationChannel class is new and not in the support library
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            CharSequence name = getString(R.string.channel_name);
-            String description = getString(R.string.channel_description);
-            int importance = NotificationManager.IMPORTANCE_DEFAULT;
-            NotificationChannel channel = new NotificationChannel(CHANNEL_ID, name, importance);
-            channel.setDescription(description);
-            // Register the channel with the system; you can't change the importance
-            // or other notification behaviors after this
-            NotificationManager notificationManager = getActivity().getSystemService(NotificationManager.class);
-            notificationManager.createNotificationChannel(channel);
-        }
+        CharSequence name = getString(R.string.channel_name);
+        String description = getString(R.string.channel_description);
+        int importance = NotificationManager.IMPORTANCE_DEFAULT;
+        NotificationChannel channel = new NotificationChannel(CHANNEL_ID, name, importance);
+        channel.setDescription(description);
+
+        NotificationManager notificationManager = getActivity().getSystemService(NotificationManager.class);
+        notificationManager.createNotificationChannel(channel);
     }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+
+        switch (requestCode) {
+            case PERMISSION_REQUEST_CODE:
+                if (grantResults.length > 0 &&
+                        grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+
+                }  else {
+                    Toast.makeText(getContext(), "Notification permission denied", Toast.LENGTH_SHORT).show();
+                }
+                return;
+
+        }
+
+    }
+
+    private void stopPushingNotification() {
+        NotificationManager notificationManager = getActivity().getSystemService(NotificationManager.class);
+
+        if (notificationManager != null) {
+            notificationManager.cancelAll();
+            Toast.makeText(getContext(), "Notification cancelled", Toast.LENGTH_SHORT).show();
+        }
+
+    }
+
 }
