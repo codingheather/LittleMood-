@@ -5,6 +5,7 @@ import static android.content.ContentValues.TAG;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
@@ -60,8 +61,10 @@ public class CalendarActivity extends AppCompatActivity {
     private CalendarView calendarView;
     private SearchView searchInput;
     private TextView quoteTextView;
+    private TextView titleText;
     private Handler quoteHandler;
     private Calendar calendar;
+    private String userName;
     private List<CalendarDay> events = new ArrayList<>(); // events on the calendar
     private static final int SUCCESS = 100;
     private FirebaseAuth mAuth = FirebaseAuth.getInstance();
@@ -69,6 +72,7 @@ public class CalendarActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_calendar);
+        titleText = findViewById(R.id.titleText);
         searchIcon = findViewById(R.id.searchIcon);
         calendarView = findViewById(R.id.calendarView);
         addJournalButton = findViewById(R.id.addJournalButton);
@@ -76,6 +80,9 @@ public class CalendarActivity extends AppCompatActivity {
         quoteTextView = findViewById(R.id.inspiringWordsTextView);
         searchInput = findViewById(R.id.searchView);
         statisticIcon = findViewById(R.id.chartIcon);
+
+        // update title (hello xyz)
+        updateTitle(titleText);
         // get daily quote(inspiring words) from API and update UI
         getDailyQuote();
 
@@ -164,6 +171,13 @@ public class CalendarActivity extends AppCompatActivity {
             }
 
         });
+    }
+
+    private void updateTitle(TextView textView){
+        FirebaseUser user = mAuth.getCurrentUser();
+        assert user != null;
+        userName = user.getDisplayName();
+        textView.setText(String.format("Hello %s!", userName));
     }
 
     private void setDay(CalendarView calendarView){
