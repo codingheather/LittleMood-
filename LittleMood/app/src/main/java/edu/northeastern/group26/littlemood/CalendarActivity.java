@@ -104,64 +104,64 @@ public class CalendarActivity extends AppCompatActivity {
 
         // show emojis under each date
         setDay(calendarView);
-
+        Calendar today = Calendar.getInstance();
+        calendarView.setMaximumDate(today);
         calendarView.setOnCalendarDayClickListener(calendarDay -> {
+            Calendar clickedDay = calendarDay.getCalendar();
+            if (!clickedDay.after(today)) {
+                // Check if the clicked day is before or the same as 'today'
+                FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+                final Intent[] intent = new Intent[1];
 
-            FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
-            final Intent[] intent = new Intent[1];
+                assert user != null;
 
-//            assert user != null;
-            assert user != null;
+                SimpleDateFormat dateFormat = new SimpleDateFormat("MMMM dd. yyyy EEE", Locale.getDefault());
 
-            SimpleDateFormat dateFormat = new SimpleDateFormat("MMMM dd. yyyy EEE", Locale.getDefault());
+                String calendarDate = dateFormat.format(calendarDay.getCalendar().getTime());
 
-            String calendarDate = dateFormat.format(calendarDay.getCalendar().getTime());
+                DatabaseReference ref = FirebaseDatabase.getInstance().getReference();
+                Query userQuery = ref.child("JournalEntries").orderByChild("email").equalTo(user.getEmail());
 
-            DatabaseReference ref = FirebaseDatabase.getInstance().getReference();
-
-//            Query userQuery = ref.child("JournalEntries").orderByChild("email").equalTo(user.getEmail());
-//            Query userQuery = ref.child("JournalEntries").orderByChild("email").equalTo("1111@11.com");
-            Query userQuery = ref.child("JournalEntries").orderByChild("email");
-            Query userQuery = ref.child("JournalEntries").orderByChild("email").equalTo(user.getEmail());
-
-            userQuery.addListenerForSingleValueEvent(new ValueEventListener() {
-                @Override
-                public void onDataChange(DataSnapshot dataSnapshot) {
-                    for (DataSnapshot userSnapshot: dataSnapshot.getChildren()) {
-                        if (userSnapshot.child("date").getValue(String.class).equals(calendarDate)) {
-                            intent[0] = new Intent(CalendarActivity.this, JournalActivity.class);
-                            intent[0].putExtra("name", userSnapshot.child("emoji").getValue(String.class));
-                            intent[0].putExtra("text", userSnapshot.child("text").getValue(String.class));
-                            intent[0].putExtra("photo", userSnapshot.child("photo").getValue(String.class));
+                userQuery.addListenerForSingleValueEvent(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(DataSnapshot dataSnapshot) {
+                        for (DataSnapshot userSnapshot : dataSnapshot.getChildren()) {
+                            if (userSnapshot.child("date").getValue(String.class).equals(calendarDate)) {
+                                intent[0] = new Intent(CalendarActivity.this, JournalActivity.class);
+                                intent[0].putExtra("name", userSnapshot.child("emoji").getValue(String.class));
+                                intent[0].putExtra("text", userSnapshot.child("text").getValue(String.class));
+                                intent[0].putExtra("photo", userSnapshot.child("photo").getValue(String.class));
+                            }
                         }
+
+                        if (intent[0] == null) {
+                            intent[0] = new Intent(CalendarActivity.this, MoodActivity.class);
+                        }
+
+                        // Extract the year, month, and day from the clicked CalendarDay
+                        int year = calendarDay.getCalendar().get(Calendar.YEAR);
+                        // month is zero-based Indexing
+                        int month = calendarDay.getCalendar().get(Calendar.MONTH) + 1;
+                        int day = calendarDay.getCalendar().get(Calendar.DAY_OF_MONTH);
+
+                        // Put the year, month, emoji, and day as extras in the intent
+                        intent[0].putExtra("YEAR", year);
+                        intent[0].putExtra("MONTH", month);
+                        intent[0].putExtra("DAY", day);
+
+
+                        startActivity(intent[0]);
+
                     }
 
-                    if (intent[0] == null){
-                        intent[0] = new Intent(CalendarActivity.this, MoodActivity.class);
+                    @Override
+                    public void onCancelled(DatabaseError databaseError) {
+                        Log.e(TAG, "onCancelled", databaseError.toException());
                     }
-
-                    // Extract the year, month, and day from the clicked CalendarDay
-                    int year = calendarDay.getCalendar().get(Calendar.YEAR);
-                    // month is zero-based Indexing
-                    int month = calendarDay.getCalendar().get(Calendar.MONTH) + 1;
-                    int day = calendarDay.getCalendar().get(Calendar.DAY_OF_MONTH);
-
-                    // Put the year, month, emoji, and day as extras in the intent
-                    intent[0].putExtra("YEAR", year);
-                    intent[0].putExtra("MONTH", month);
-                    intent[0].putExtra("DAY", day);
-
-
-                    startActivity(intent[0]);
-
-                }
-
-                @Override
-                public void onCancelled(DatabaseError databaseError) {
-                    Log.e(TAG, "onCancelled", databaseError.toException());
-                }
-            });
-
+                });
+            } else {
+                Toast.makeText(CalendarActivity.this, "Future dates are not selectable.", Toast.LENGTH_SHORT).show();
+            }
 
         });
     }
@@ -175,9 +175,7 @@ public class CalendarActivity extends AppCompatActivity {
         FirebaseDatabase database = FirebaseDatabase.getInstance();
         DatabaseReference myRef = database.getReference("JournalEntries");
 
-        Query query = myRef.orderByChild("email");
-
-//        .equalTo(user.getEmail())
+        Query query = myRef.orderByChild("email").equalTo(user.getEmail());
 
         query.addValueEventListener(new ValueEventListener() {
             @Override
