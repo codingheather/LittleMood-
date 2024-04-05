@@ -32,10 +32,8 @@ public class StatisticActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_statistic);
-
         recyclerView = findViewById(R.id.recyclerView);
 
-        // TODO: Set up RecyclerView with LayoutManager and Adapter
         initData();
     }
 
@@ -104,6 +102,5 @@ public class StatisticActivity extends AppCompatActivity {
     }
 
 
-    }
-
 }
+
