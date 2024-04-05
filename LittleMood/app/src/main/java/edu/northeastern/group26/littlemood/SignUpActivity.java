@@ -46,6 +46,7 @@ public class SignUpActivity extends AppCompatActivity {
                             builder.setDisplayName(username);
                             user.updateProfile(builder.build());
                             Intent intent = new Intent(getApplicationContext(), CalendarActivity.class);
+                            intent.putExtra("username", username);
                             startActivity(intent);
                         } else {
                             Log.i("TAG", "onComplete: 2222"+ task.getException());

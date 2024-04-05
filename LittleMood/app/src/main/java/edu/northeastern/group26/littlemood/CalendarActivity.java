@@ -20,6 +20,8 @@ import android.os.Message;
 import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
+import android.widget.ProgressBar;
 import android.widget.SearchView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -38,6 +40,7 @@ import com.google.firebase.database.ValueEventListener;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.w3c.dom.Text;
 
 import java.io.BufferedReader;
 import java.io.InputStream;
@@ -62,6 +65,7 @@ public class CalendarActivity extends AppCompatActivity {
     private SearchView searchInput;
     private TextView quoteTextView;
     private TextView titleText;
+    private LinearLayout waitQuote, waitCalendar;
     private Handler quoteHandler;
     private Calendar calendar;
     private String userName;
@@ -80,11 +84,22 @@ public class CalendarActivity extends AppCompatActivity {
         quoteTextView = findViewById(R.id.inspiringWordsTextView);
         searchInput = findViewById(R.id.searchView);
         statisticIcon = findViewById(R.id.chartIcon);
+        waitCalendar = findViewById(R.id.loading_calendar_progressBar);
+        waitQuote = findViewById(R.id.loading_quote_progressBar);
+
+        // initial set calendar and daily quote to invisible
+        calendarView.setVisibility(View.INVISIBLE);
+        quoteTextView.setVisibility(View.INVISIBLE);
+        waitCalendar.setVisibility(View.VISIBLE);
+        waitQuote.setVisibility(View.VISIBLE);
+
+        // get username (if jump from sign up)
+        userName = getIntent().getStringExtra("username");
 
         // update title (hello xyz)
         updateTitle(titleText);
         // get daily quote(inspiring words) from API and update UI
-        getDailyQuote();
+        getDailyQuote(quoteTextView);
 
         // enter mood page
         addJournalButton.setOnClickListener(view -> {
@@ -104,20 +119,23 @@ public class CalendarActivity extends AppCompatActivity {
             startActivity(intent);
         });
 
-
         // define search activity
         searchIcon = findViewById(R.id.searchIcon);
         searchIcon.setOnClickListener(v -> showSearchedDate(searchInput));
 
-        // show emojis under each date
-        setDay(calendarView);
+        // set maximum date to today
         Calendar today = Calendar.getInstance();
         calendarView.setMaximumDate(today);
+
+        // show emojis under each date
+        setDay();
+
+        // set date click event
         calendarView.setOnCalendarDayClickListener(calendarDay -> {
             Calendar clickedDay = calendarDay.getCalendar();
+            // Check if the clicked day is before or the same as 'today'
             if (!clickedDay.after(today)) {
-                // Check if the clicked day is before or the same as 'today'
-                FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+                FirebaseUser user = mAuth.getCurrentUser();
                 final Intent[] intent = new Intent[1];
 
                 assert user != null;
@@ -156,11 +174,8 @@ public class CalendarActivity extends AppCompatActivity {
                         intent[0].putExtra("MONTH", month);
                         intent[0].putExtra("DAY", day);
 
-
                         startActivity(intent[0]);
-
                     }
-
                     @Override
                     public void onCancelled(DatabaseError databaseError) {
                         Log.e(TAG, "onCancelled", databaseError.toException());
@@ -173,24 +188,22 @@ public class CalendarActivity extends AppCompatActivity {
         });
     }
 
+
     private void updateTitle(TextView textView){
-        FirebaseUser user = mAuth.getCurrentUser();
-        assert user != null;
-        userName = user.getDisplayName();
+        if (userName == null) {
+            FirebaseUser user = mAuth.getCurrentUser();
+            assert user != null;
+            userName = user.getDisplayName();
+        }
         textView.setText(String.format("Hello %s!", userName));
     }
 
-    private void setDay(CalendarView calendarView){
+    private void setDay(){
         FirebaseUser user = mAuth.getCurrentUser();
-        Log.i(TAG, "setDaysetDaysetDay: "+user);
-
-
-
         FirebaseDatabase database = FirebaseDatabase.getInstance();
         DatabaseReference myRef = database.getReference("JournalEntries");
 
         Query query = myRef.orderByChild("email").equalTo(user.getEmail());
-
         query.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
@@ -208,18 +221,20 @@ public class CalendarActivity extends AppCompatActivity {
                         CalendarDay calendarDay = new CalendarDay(calendar);
                         calendarDay.setImageDrawable(emojiDrawable);
                         events.add(calendarDay);
-                        calendarView.setCalendarDays(events);
-                        Log.i(TAG, "onDataChange: "+emoji);
-
-                        System.out.println("Parsed date: " + date);
                     } catch (ParseException e) {
-                        System.out.println("Error parsing the date.");
+                        Log.e("Parsed error", "Error parsing the date.");
                         e.printStackTrace();
                     }
-
                 }
-            }
+                // Update the calendar view with the new events list
+                calendarView.setCalendarDays(events);
 
+                // Make UI updates after data is processed
+                runOnUiThread(() -> {
+                    waitCalendar.setVisibility(View.GONE);
+                    calendarView.setVisibility(View.VISIBLE);
+                });
+            }
             @Override
             public void onCancelled(DatabaseError databaseError) {
                 // Handle possible errors.
@@ -227,7 +242,7 @@ public class CalendarActivity extends AppCompatActivity {
         });
     }
 
-    private void showSearchedDate(SearchView searchView){
+    private void showSearchedDate(@NonNull SearchView searchView){
         searchView.setQueryHint("YYYY-MM");
         if (searchView.getVisibility() == View.GONE) {
             searchView.setVisibility(View.VISIBLE);
@@ -244,7 +259,7 @@ public class CalendarActivity extends AppCompatActivity {
                     if (date != null) {
                         calendar = Calendar.getInstance();
                         calendar.setTime(date);
-                        Toast.makeText(CalendarActivity.this, "Selected month: " + query, Toast.LENGTH_SHORT).show();
+                        Toast.makeText(CalendarActivity.this, "Searched month: " + query, Toast.LENGTH_SHORT).show();
                         calendarView.setDate(date);
                     }
                 } catch (ParseException e) {
@@ -263,7 +278,7 @@ public class CalendarActivity extends AppCompatActivity {
         });
     }
 
-    private void getDailyQuote(){
+    private void getDailyQuote(TextView textView){
         quoteHandler = new Handler(message -> {
             if(message.what == SUCCESS){
                 String responseData = message.getData().getString("data");
@@ -275,7 +290,12 @@ public class CalendarActivity extends AppCompatActivity {
                         String author = jsonObject.optString("a"); // Assuming "a" is the author
                         String fullQuote = "\"" + quoteText + "\" - " + author;
                         // update UI with the quote
-                        runOnUiThread(() -> quoteTextView.setText(fullQuote));
+                        runOnUiThread(() -> {
+                            textView.setText(fullQuote);
+                            waitQuote.setVisibility(View.GONE);
+                            // calendarView.setVisibility(View.VISIBLE);
+                            textView.setVisibility(View.VISIBLE);
+                        });
                     }
                 } catch (JSONException e) {
                     e.printStackTrace();
@@ -287,7 +307,6 @@ public class CalendarActivity extends AppCompatActivity {
         new Thread(() -> {
             String jsonData = askZenQuote();
             Log.d("jsonData：",jsonData);
-            JSONObject jsonObject = null;
             Message message=Message.obtain();
             Bundle bundle=new Bundle();
             bundle.putString("data",jsonData);
