@@ -100,6 +100,7 @@ public class SettingsFragment extends PreferenceFragmentCompat {
             AlertDialog dialog = builder.create();
             dialog.show();
 
+            Toast.makeText(getActivity(), "Successfully changed password", Toast.LENGTH_SHORT).show();
             return true;
         });
 
@@ -129,6 +130,7 @@ public class SettingsFragment extends PreferenceFragmentCompat {
             AlertDialog dialog = builder.create();
             dialog.show();
 
+            Toast.makeText(getActivity(), "Successfully changed username", Toast.LENGTH_SHORT).show();
             return true;
         });
 
