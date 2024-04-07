@@ -1,5 +1,8 @@
 package edu.northeastern.group26.littlemood;
 
+
+import android.app.AlertDialog;
+
 import android.Manifest;
 import android.app.AlertDialog;
 import android.app.Notification;
@@ -7,12 +10,15 @@ import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.Context;
+
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
+
 import android.view.LayoutInflater;
+
 import android.view.View;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
@@ -20,6 +26,7 @@ import android.widget.EditText;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+
 import androidx.core.app.ActivityCompat;
 import androidx.core.app.NotificationCompat;
 import androidx.core.app.NotificationManagerCompat;
@@ -90,17 +97,20 @@ public class SettingsFragment extends PreferenceFragmentCompat {
                             .addOnCompleteListener(task -> {
                                 if (task.isSuccessful()) {
                                     Log.d("PasswordUpdate", "User password updated.");
+                                    Toast.makeText(getActivity(), "Successfully changed password", Toast.LENGTH_SHORT).show();
                                 }
                             });
                 } else {
                     Toast.makeText(getActivity(), "check your new password", Toast.LENGTH_SHORT).show();
                 }
+            }).setNegativeButton("Back", (dialog, id) -> {
+                dialog.dismiss();
             });
 
             AlertDialog dialog = builder.create();
             dialog.show();
 
-            Toast.makeText(getActivity(), "Successfully changed password", Toast.LENGTH_SHORT).show();
+
             return true;
         });
 
@@ -123,14 +133,18 @@ public class SettingsFragment extends PreferenceFragmentCompat {
                         .addOnCompleteListener(task -> {
                             if (task.isSuccessful()) {
                                 Log.d("EmailUpdate", "User email updated.");
+                                Toast.makeText(getActivity(), "Successfully changed username", Toast.LENGTH_SHORT).show();
                             }
                         });
-            });
+            })
+                    .setNegativeButton("Back", (dialog, id) -> {
+                        dialog.dismiss(); 
+                    });
 
             AlertDialog dialog = builder.create();
             dialog.show();
 
-            Toast.makeText(getActivity(), "Successfully changed username", Toast.LENGTH_SHORT).show();
+
             return true;
         });
 
@@ -174,6 +188,48 @@ public class SettingsFragment extends PreferenceFragmentCompat {
                         });
                     })
                     .setNegativeButton(android.R.string.no, null).show();
+            return true;
+        });
+
+        findPreference("delete_account").setOnPreferenceClickListener(preference -> {
+
+            new AlertDialog.Builder(getContext())
+                    .setTitle("Delete Account")
+                    .setMessage("Are you sure you want to delete your account? This cannot be undone.")
+                    .setPositiveButton(android.R.string.yes, (dialog, whichButton) -> {
+                        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+
+                        assert user != null;
+                        DatabaseReference ref = FirebaseDatabase.getInstance().getReference();
+                        Query userQuery = ref.child("JournalEntries").orderByChild("email").equalTo(user.getEmail());
+
+                        userQuery.addListenerForSingleValueEvent(new ValueEventListener() {
+                            @Override
+                            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                                for (DataSnapshot userSnapshot: dataSnapshot.getChildren()) {
+                                    userSnapshot.getRef().removeValue();
+                                }
+
+                                user.delete().addOnCompleteListener(task -> {
+                                    if (task.isSuccessful()) {
+                                        Log.d(getTag(), "User account and data deleted.");
+                                        Toast.makeText(getActivity(), "Successfully deleted the account", Toast.LENGTH_SHORT).show();
+                                        Intent intent = new Intent(getActivity(), LoginActivity.class);
+                                        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                                        startActivity(intent);
+                                        getActivity().finish();
+                                    }
+                                });
+                            }
+
+                            @Override
+                            public void onCancelled(@NonNull DatabaseError databaseError) {
+                                Log.e(getTag(), "onCancelled", databaseError.toException());
+                            }
+                        });
+                    })
+                    .setNegativeButton(android.R.string.no, null).show();
+
             return true;
         });
 

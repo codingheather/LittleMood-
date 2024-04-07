@@ -30,11 +30,15 @@ public class SignUpActivity extends AppCompatActivity {
         String email = ((EditText) findViewById(R.id.SignUpEmail)).getText().toString();
         String password = ((EditText) findViewById(R.id.SignUpPassword)).getText().toString();
         String username = ((EditText) findViewById(R.id.SignUpUsername)).getText().toString();
+//        email="wendyjiang142322@gmail.com";
+//        password="Yanyan142322";
         mAuth.createUserWithEmailAndPassword(email, password)
                 .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
                     @Override
                     public void onComplete(@NonNull Task<AuthResult> task) {
+//                        Log.i("TAG", "onComplete: 44444444");
                         if (task.isSuccessful()) {
+//                            Log.i("TAG", "onComplete:1111 ");
                             // Sign in success, update UI with the signed-in user's information
                             Log.d(SignUpActivity.class.getName(), "createUserWithEmail:success");
                             FirebaseUser user = mAuth.getCurrentUser();
@@ -42,8 +46,10 @@ public class SignUpActivity extends AppCompatActivity {
                             builder.setDisplayName(username);
                             user.updateProfile(builder.build());
                             Intent intent = new Intent(getApplicationContext(), CalendarActivity.class);
+                            intent.putExtra("username", username);
                             startActivity(intent);
                         } else {
+//                            Log.i("TAG", "onComplete: 2222"+ task.getException());
                             // If sign in fails, display a message to the user.
                             Log.w(SignUpActivity.class.getName(), "createUserWithEmail:failure", task.getException());
                             Toast.makeText(SignUpActivity.this, "Authentication failed.",
