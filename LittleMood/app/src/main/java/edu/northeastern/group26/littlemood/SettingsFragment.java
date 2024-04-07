@@ -100,7 +100,6 @@ public class SettingsFragment extends PreferenceFragmentCompat {
             AlertDialog dialog = builder.create();
             dialog.show();
 
-
             return true;
         });
 
@@ -125,14 +124,10 @@ public class SettingsFragment extends PreferenceFragmentCompat {
                                 Log.d("EmailUpdate", "User email updated.");
                             }
                         });
-            })
-                    .setNegativeButton("Back", (dialog, id) -> {
-                        dialog.dismiss();
-                    });
+            });
 
             AlertDialog dialog = builder.create();
             dialog.show();
-
 
             return true;
         });
