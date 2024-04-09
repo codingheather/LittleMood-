@@ -1,14 +1,17 @@
 package edu.northeastern.group26.littlemood;
 
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
+import android.widget.LinearLayout;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.constraintlayout.widget.ConstraintLayout;
 
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
@@ -19,11 +22,15 @@ import com.google.firebase.auth.UserProfileChangeRequest;
 
 public class SignUpActivity extends AppCompatActivity {
     private FirebaseAuth mAuth = FirebaseAuth.getInstance();
+    private LinearLayout waitSignup;
+    private ConstraintLayout signup;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_signup);
+        waitSignup = findViewById(R.id.loading_signup_progressBar);
+        signup = findViewById(R.id.signup);
     }
 
     public void signUp(View view) {
@@ -32,6 +39,9 @@ public class SignUpActivity extends AppCompatActivity {
         String username = ((EditText) findViewById(R.id.SignUpUsername)).getText().toString();
 //        email="wendyjiang142322@gmail.com";
 //        password="Yanyan142322";
+
+        signup.setVisibility(View.INVISIBLE);
+        waitSignup.setVisibility(View.VISIBLE);
         mAuth.createUserWithEmailAndPassword(email, password)
                 .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
                     @Override
@@ -45,6 +55,8 @@ public class SignUpActivity extends AppCompatActivity {
                             UserProfileChangeRequest.Builder builder = new UserProfileChangeRequest.Builder();
                             builder.setDisplayName(username);
                             user.updateProfile(builder.build());
+
+                            waitSignup.setVisibility(View.GONE);
                             Intent intent = new Intent(getApplicationContext(), CalendarActivity.class);
                             intent.putExtra("username", username);
                             startActivity(intent);
@@ -54,6 +66,7 @@ public class SignUpActivity extends AppCompatActivity {
                             Log.w(SignUpActivity.class.getName(), "createUserWithEmail:failure", task.getException());
                             Toast.makeText(SignUpActivity.this, "Authentication failed.",
                             Toast.LENGTH_SHORT).show();
+                            waitSignup.setVisibility(View.GONE);
                         }
                     }
                 });
