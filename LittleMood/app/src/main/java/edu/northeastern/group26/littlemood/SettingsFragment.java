@@ -179,6 +179,10 @@ public class SettingsFragment extends PreferenceFragmentCompat {
 
                                 Log.d(getTag(), "Cleared all ser data.");
                                 Toast.makeText(getActivity(), "Successfully cleared all user data", Toast.LENGTH_SHORT).show();
+                                Intent intent = new Intent(getActivity(), CalendarActivity.class);
+                                intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                                startActivity(intent);
+                                getActivity().finish();
                             }
 
                             @Override
