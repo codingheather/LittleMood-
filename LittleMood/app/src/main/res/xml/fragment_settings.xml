@@ -1,35 +1,43 @@
 <?xml version="1.0" encoding="utf-8"?>
-<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <CheckBoxPreference
         android:key="update_notifications"
+        android:summary="Check to enable notifications"
         android:title="Notification Settings"
-        android:summary="Check to enable notifications" />
+        app:iconSpaceReserved="false"/>
 
     <Preference
         android:key="change_password"
+        android:summary="Update your account password"
         android:title="Change Password"
-        android:summary="Update your account password" />
+        app:iconSpaceReserved="false"/>
 
     <Preference
         android:key="change_username"
+        android:summary="Update your username"
         android:title="Change Username"
-        android:summary="Update your username" />
+        app:iconSpaceReserved="false"/>
 
     <Preference
         android:key="logout"
+        android:summary="Log out of your account"
         android:title="Log Out"
-        android:summary="Log out of your account" />
+        app:singleLineTitle="false"
+        app:iconSpaceReserved="false"/>
 
     <Preference
         android:key="clear_data"
+        android:summary="Clear all app data and settings"
         android:title="Clear Data"
-        android:summary="Clear all app data and settings" />
+        app:iconSpaceReserved="false"/>
 
     <Preference
         android:key="delete_account"
+        android:summary="Delete the account and everything"
         android:title="Delete Account"
-        android:summary="Delete the account and everything" />
+        app:iconSpaceReserved="false"/>
 
 
 </PreferenceScreen>
