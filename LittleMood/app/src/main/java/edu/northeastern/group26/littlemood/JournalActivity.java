@@ -1,19 +1,29 @@
 package edu.northeastern.group26.littlemood;
 
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.camera.core.ImageCapture;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Environment;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.camera.core.ImageCapture;
+
+import com.bumptech.glide.Glide;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
-import com.bumptech.glide.Glide;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.Query;
+import com.google.firebase.database.ValueEventListener;
 
 import java.io.File;
 import java.text.SimpleDateFormat;
@@ -26,6 +36,8 @@ public class JournalActivity extends AppCompatActivity {
     FirebaseUtil firebaseUtil = new FirebaseUtil();
 
     private FirebaseAuth mAuth = FirebaseAuth.getInstance();
+
+    private FirebaseDatabase db = FirebaseDatabase.getInstance();
 
     private String photoUrl = "";
 
@@ -127,6 +139,46 @@ public class JournalActivity extends AppCompatActivity {
                 newEntry = new JournalEntry(date, emoji, text, photoUrl, email);
                 // overwrite if data with same date and email already exist, otherwise insert new
                 firebaseUtil.overwriteJournalEntry(email, date, newEntry);
+
+                // query for users with the same date and same emoji
+                DatabaseReference ref = db.getReference("JournalEntries");
+
+                Query query = ref.orderByChild("date").equalTo(date);
+
+                query.addListenerForSingleValueEvent(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                        int count = 0;
+                        for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
+                            String curEmoji = snapshot.child("emoji").getValue(String.class);
+                            if (emoji.equals(curEmoji)) {
+                                count++;
+                            }
+                        }
+
+                        // Determine the message based on the count
+                        String message;
+                        if (count == 2) { // Only one more user
+                            message = (count - 1) + " more user has " + emoji + " feeling today.\nYou are not alone";
+                        } else if (count == 1) { // Current user is the first
+                            message = "First to share this feeling today!\nGreat work👍";
+                        } else {  // Multiple other users
+                            message = (count - 1) + " more users have " + emoji + " feeling today.\nYou are not alone";
+                        }
+
+                        Toast toast = new Toast(getApplicationContext());
+                        toast.setGravity(Gravity.CENTER, 0, 0); // Position the Toast
+                        toast.setDuration(Toast.LENGTH_LONG);
+                        toast.setText(message);
+                        toast.show();
+                    }
+
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError error) {
+                        Log.w("error", error.toException());
+                    }
+
+                });
                 Intent intent = new Intent(getApplicationContext(), CalendarActivity.class);
                 startActivity(intent);
             }
@@ -158,4 +210,5 @@ public class JournalActivity extends AppCompatActivity {
             }
         });
     }
+
 }
