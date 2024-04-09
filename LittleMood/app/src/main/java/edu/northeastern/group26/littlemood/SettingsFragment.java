@@ -36,7 +36,9 @@ import androidx.preference.PreferenceFragmentCompat;
 
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
+import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseAuthInvalidCredentialsException;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -48,6 +50,8 @@ import com.google.firebase.database.ValueEventListener;
 public class SettingsFragment extends PreferenceFragmentCompat {
     private static final String CHANNEL_ID = "settings notif";
     private static final int PERMISSION_REQUEST_CODE = 112;
+
+    private FirebaseAuth mAuth = FirebaseAuth.getInstance();
 
     @Override
     public void onCreatePreferences(Bundle savedInstanceState, String rootKey) {
@@ -84,24 +88,39 @@ public class SettingsFragment extends PreferenceFragmentCompat {
 
             EditText newPw = dialogView.findViewById(R.id.NewPw);
             EditText confirmNewPw = dialogView.findViewById(R.id.ConfirmNewPw);
+            EditText currentPw = dialogView.findViewById(R.id.CurrentPw);
 
             builder.setPositiveButton("Confirm", (dialog, id) -> {
+                String currentPassword = currentPw.getText().toString();
                 String newPassword = newPw.getText().toString();
                 String confirmNewPassword = confirmNewPw.getText().toString();
 
                 if (confirmNewPassword.equals(newPassword)) {
-                    FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
-
+                    FirebaseUser user = mAuth.getCurrentUser();
                     assert user != null;
-                    user.updatePassword(newPassword)
-                            .addOnCompleteListener(task -> {
-                                if (task.isSuccessful()) {
-                                    Log.d("PasswordUpdate", "User password updated.");
-                                    Toast.makeText(getActivity(), "Successfully changed password", Toast.LENGTH_SHORT).show();
-                                }
-                            });
+
+                    mAuth.signInWithEmailAndPassword(user.getEmail(), currentPassword).addOnCompleteListener((OnCompleteListener<AuthResult>) signInTask -> {
+                        if (signInTask.isSuccessful()) {
+                            user.updatePassword(newPassword)
+                                    .addOnCompleteListener(updateTask -> {
+                                        if (updateTask.isSuccessful()) {
+                                            Log.d("PasswordUpdate", "User password updated.");
+                                            Toast.makeText(getActivity(), "Successfully changed password", Toast.LENGTH_SHORT).show();
+                                        } else {
+                                            Exception exception = updateTask.getException();
+                                            if (exception != null) {
+                                                Toast.makeText(getActivity(), "Failed to change password " + updateTask.getException().getMessage(), Toast.LENGTH_SHORT).show();
+                                            }
+                                        }
+                                    });
+                        } else {
+                            if (signInTask.getException() instanceof FirebaseAuthInvalidCredentialsException) {
+                                Toast.makeText(getActivity(), "Wrong current password", Toast.LENGTH_SHORT).show();
+                            }
+                        }
+                    });
                 } else {
-                    Toast.makeText(getActivity(), "check your new password", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(getActivity(), "New passwords don't match", Toast.LENGTH_SHORT).show();
                 }
             }).setNegativeButton("Back", (dialog, id) -> {
                 dialog.dismiss();
