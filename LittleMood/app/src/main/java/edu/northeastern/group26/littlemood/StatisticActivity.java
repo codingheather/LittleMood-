@@ -1,12 +1,12 @@
 package edu.northeastern.group26.littlemood;
 
+import android.os.Bundle;
+import android.util.Log;
+
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import android.os.Bundle;
-import android.util.Log;
-import android.widget.TextView;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
@@ -16,18 +16,13 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.Date;
-import java.util.Iterator;
 import java.util.List;
-
-import androidx.recyclerview.widget.RecyclerView;
 
 public class StatisticActivity extends AppCompatActivity {
     private RecyclerView recyclerView;
+    private FirebaseAuth mAuth = FirebaseAuth.getInstance();
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -40,16 +35,16 @@ public class StatisticActivity extends AppCompatActivity {
 
     private void initData() {
 
-//        FirebaseUser user = mAuth.getCurrentUser();
+        FirebaseUser user = mAuth.getCurrentUser();
         FirebaseDatabase database = FirebaseDatabase.getInstance();
         DatabaseReference myRef = database.getReference("JournalEntries");
-
-        Query query = myRef.orderByChild("email");
+        // get the data of current user
+        Query query = myRef.orderByChild("email").equalTo(user.getEmail());
         query.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
 
-                int emojiNun;
+                int emojiNum;
                 List<JournalEntry> mList = new ArrayList<>();
                 Calendar calendar = Calendar.getInstance();
                 int month = calendar.get(Calendar.MONTH);
@@ -65,7 +60,7 @@ public class StatisticActivity extends AppCompatActivity {
                     }
 
                 }
-                emojiNun=mList.size();
+                emojiNum = mList.size();
                 try {
                     for (int i = 0; i < mList.size() - 1; i++) {
                         for (int j = mList.size() - 1; j > i; j--) {
@@ -75,16 +70,15 @@ public class StatisticActivity extends AppCompatActivity {
                             }
                         }
                     }
-//
+                    mList.sort((o1, o2) -> Integer.compare(o2.emailNum, o1.emailNum));
+
                     Log.i("TAG", "onDataChange: "+mList.size());
-                    EmojiAdapter  adapter=new EmojiAdapter(StatisticActivity.this
-                            ,mList,emojiNun);
+                    EmojiAdapter adapter=new EmojiAdapter(StatisticActivity.this,
+                            mList, emojiNum);
 
                     recyclerView.setAdapter(adapter);
                     recyclerView.setLayoutManager(new LinearLayoutManager(StatisticActivity.this,
                             LinearLayoutManager.VERTICAL, false));
-
-
 
                 } catch (Exception e) {
                     System.out.println("Error parsing the date.");

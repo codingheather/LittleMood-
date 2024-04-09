@@ -15,7 +15,7 @@
         android:layout_height="wrap_content"
         android:gravity="center"
         android:padding="13dp"
-        android:text="Statistics"
+        android:text="This Month's Mood Highlights"
         android:background="@color/baby_blue"
         android:textSize="20sp"
         android:textAppearance="@style/TextAppearance.AppCompat.Large"
