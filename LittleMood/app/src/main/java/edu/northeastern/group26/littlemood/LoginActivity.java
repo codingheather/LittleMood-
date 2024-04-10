@@ -10,7 +10,6 @@ import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.Toast;
 
-import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.constraintlayout.widget.ConstraintLayout;
 
@@ -20,6 +19,8 @@ import com.google.firebase.FirebaseApp;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+
+import org.checkerframework.checker.nullness.qual.NonNull;
 
 public class LoginActivity extends AppCompatActivity {
     private FirebaseAuth mAuth;
@@ -38,11 +39,16 @@ public class LoginActivity extends AppCompatActivity {
     public void login(View view) {
         String email = ((EditText) findViewById(R.id.Email)).getText().toString();
         String password = ((EditText) findViewById(R.id.Password)).getText().toString();
+
+        email = "h1@gmail.com";
+        password = "111111";
+
 //        String email = "h1@gmail.com";
 //        String password = "111111";
 
         login.setVisibility(View.INVISIBLE);
         waitLogin.setVisibility(View.VISIBLE);
+
         mAuth.signInWithEmailAndPassword(email, password)
                 .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
                     @Override
