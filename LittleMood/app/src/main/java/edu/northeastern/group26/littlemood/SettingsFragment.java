@@ -4,8 +4,6 @@ package edu.northeastern.group26.littlemood;
 import android.app.AlertDialog;
 
 import android.Manifest;
-import android.app.AlertDialog;
-import android.app.Notification;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
@@ -20,22 +18,19 @@ import android.util.Log;
 import android.view.LayoutInflater;
 
 import android.view.View;
-import android.widget.CheckBox;
-import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.Toast;
 
 
 import androidx.core.app.ActivityCompat;
 import androidx.core.app.NotificationCompat;
-import androidx.core.app.NotificationManagerCompat;
 import androidx.preference.CheckBoxPreference;
-import androidx.preference.Preference;
 import androidx.preference.PreferenceFragmentCompat;
 
 import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.Task;
+import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseAuthInvalidCredentialsException;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -44,11 +39,14 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 
+
 import org.checkerframework.checker.nullness.qual.NonNull;
+import java.util.Objects;
 
 public class SettingsFragment extends PreferenceFragmentCompat {
-    private static final String CHANNEL_ID = "settings notif";
+    private static final String CHANNEL_ID = "settings notify";
     private static final int PERMISSION_REQUEST_CODE = 112;
+    private final FirebaseAuth mAuth = FirebaseAuth.getInstance();
 
     @Override
     public void onCreatePreferences(Bundle savedInstanceState, String rootKey) {
@@ -56,23 +54,21 @@ public class SettingsFragment extends PreferenceFragmentCompat {
         createNotificationChannel();
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-            if (ActivityCompat.checkSelfPermission(getContext(), android.Manifest.permission.POST_NOTIFICATIONS) != PackageManager.PERMISSION_GRANTED) {
-                ActivityCompat.requestPermissions(getActivity(), new String[]{Manifest.permission.POST_NOTIFICATIONS}, PERMISSION_REQUEST_CODE);
+            if (ActivityCompat.checkSelfPermission(requireContext(), android.Manifest.permission.POST_NOTIFICATIONS) != PackageManager.PERMISSION_GRANTED) {
+                ActivityCompat.requestPermissions(requireActivity(), new String[]{Manifest.permission.POST_NOTIFICATIONS}, PERMISSION_REQUEST_CODE);
             }
         }
 
         CheckBoxPreference notificationCheckBox = findPreference("update_notifications");
-        notificationCheckBox.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
-            @Override
-            public boolean onPreferenceChange(@NonNull Preference preference, Object newValue) {
-                boolean isChecked = (boolean) newValue;
-                if (isChecked) {
-                    addNotification();
-                } else {
-                    stopPushingNotification();
-                }
-                return true;
+        assert notificationCheckBox != null;
+        notificationCheckBox.setOnPreferenceChangeListener((preference, newValue) -> {
+            boolean isChecked = (boolean) newValue;
+            if (isChecked) {
+                addNotification();
+            } else {
+                stopPushingNotification();
             }
+            return true;
         });
 
 
@@ -85,28 +81,41 @@ public class SettingsFragment extends PreferenceFragmentCompat {
 
             EditText newPw = dialogView.findViewById(R.id.NewPw);
             EditText confirmNewPw = dialogView.findViewById(R.id.ConfirmNewPw);
+            EditText currentPw = dialogView.findViewById(R.id.CurrentPw);
 
             builder.setPositiveButton("Confirm", (dialog, id) -> {
+                String currentPassword = currentPw.getText().toString();
                 String newPassword = newPw.getText().toString();
                 String confirmNewPassword = confirmNewPw.getText().toString();
 
                 if (confirmNewPassword.equals(newPassword)) {
-                    FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
-
+                    FirebaseUser user = mAuth.getCurrentUser();
                     assert user != null;
-                    user.updatePassword(newPassword)
-                            .addOnCompleteListener(task -> {
-                                if (task.isSuccessful()) {
-                                    Log.d("PasswordUpdate", "User password updated.");
-                                    Toast.makeText(getActivity(), "Successfully changed password", Toast.LENGTH_SHORT).show();
-                                }
-                            });
+
+                    mAuth.signInWithEmailAndPassword(Objects.requireNonNull(user.getEmail()), currentPassword).addOnCompleteListener(signInTask -> {
+                        if (signInTask.isSuccessful()) {
+                            user.updatePassword(newPassword)
+                                    .addOnCompleteListener(updateTask -> {
+                                        if (updateTask.isSuccessful()) {
+                                            Log.d("PasswordUpdate", "User password updated.");
+                                            Toast.makeText(getActivity(), "Successfully changed password", Toast.LENGTH_SHORT).show();
+                                        } else {
+                                            Exception exception = updateTask.getException();
+                                            if (exception != null) {
+                                                Toast.makeText(getActivity(), "Failed to change password " + updateTask.getException().getMessage(), Toast.LENGTH_SHORT).show();
+                                            }
+                                        }
+                                    });
+                        } else {
+                            if (signInTask.getException() instanceof FirebaseAuthInvalidCredentialsException) {
+                                Toast.makeText(getActivity(), "Wrong current password", Toast.LENGTH_SHORT).show();
+                            }
+                        }
+                    });
                 } else {
-                    Toast.makeText(getActivity(), "check your new password", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(getActivity(), "New passwords don't match", Toast.LENGTH_SHORT).show();
                 }
-            }).setNegativeButton("Back", (dialog, id) -> {
-                dialog.dismiss();
-            });
+            }).setNegativeButton("Back", (dialog, id) -> dialog.dismiss());
 
             AlertDialog dialog = builder.create();
             dialog.show();
@@ -138,9 +147,7 @@ public class SettingsFragment extends PreferenceFragmentCompat {
                             }
                         });
             })
-                    .setNegativeButton("Back", (dialog, id) -> {
-                        dialog.dismiss(); 
-                    });
+                    .setNegativeButton("Back", (dialog, id) -> dialog.dismiss());
 
             AlertDialog dialog = builder.create();
             dialog.show();
@@ -151,12 +158,19 @@ public class SettingsFragment extends PreferenceFragmentCompat {
 
         findPreference("logout").setOnPreferenceClickListener(preference -> {
             // log out and go back to log in page
-            FirebaseAuth.getInstance().signOut();
-            Toast.makeText(getActivity(), "Successfully logged out", Toast.LENGTH_SHORT).show();
-            Intent intent = new Intent(getActivity(), LoginActivity.class);
-            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-            startActivity(intent);
-            getActivity().finish();
+
+            new AlertDialog.Builder(getContext())
+                    .setTitle("Log Out")
+                    .setMessage("Are you sure you want to log out?")
+                    .setPositiveButton(android.R.string.yes, (dialog, whichButton) -> {
+                        FirebaseAuth.getInstance().signOut();
+                        Toast.makeText(getActivity(), "Successfully logged out", Toast.LENGTH_SHORT).show();
+                        Intent intent = new Intent(getActivity(), LoginActivity.class);
+                        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                        startActivity(intent);
+                        getActivity().finish();
+                    })
+                    .setNegativeButton(android.R.string.no, null).show();
             return true;
         });
 
@@ -180,6 +194,10 @@ public class SettingsFragment extends PreferenceFragmentCompat {
 
                                 Log.d(getTag(), "Cleared all ser data.");
                                 Toast.makeText(getActivity(), "Successfully cleared all user data", Toast.LENGTH_SHORT).show();
+                                Intent intent = new Intent(getActivity(), CalendarActivity.class);
+                                intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                                startActivity(intent);
+                                getActivity().finish();
                             }
 
                             @Override
@@ -275,17 +293,11 @@ public class SettingsFragment extends PreferenceFragmentCompat {
 
             return true;
         });
-    }
-
-    @Override
-    public void onViewCreated(View view, Bundle savedInstanceState) {
-        super.onViewCreated(view, savedInstanceState);
-        view.setBackgroundColor(getResources().getColor(R.color.light_yellow)); // Ensure you have light_yellow defined in your colors.xml
     }
 
     private void addNotification() {
         NotificationCompat.Builder builder =
-                new NotificationCompat.Builder(getContext(), CHANNEL_ID)
+                new NotificationCompat.Builder(requireContext(), CHANNEL_ID)
                         .setSmallIcon(R.drawable.bell)
                         .setContentTitle("Notification")
                         .setContentText("Notification enabled!");
@@ -296,7 +308,7 @@ public class SettingsFragment extends PreferenceFragmentCompat {
         builder.setContentIntent(contentIntent);
 
         // Add as notification
-        NotificationManager manager = (NotificationManager) getActivity().getSystemService(Context.NOTIFICATION_SERVICE);
+        NotificationManager manager = (NotificationManager) requireActivity().getSystemService(Context.NOTIFICATION_SERVICE);
         manager.notify(0, builder.build());
     }
 
@@ -315,16 +327,12 @@ public class SettingsFragment extends PreferenceFragmentCompat {
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
 
-        switch (requestCode) {
-            case PERMISSION_REQUEST_CODE:
-                if (grantResults.length > 0 &&
-                        grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-
-                }  else {
-                    Toast.makeText(getContext(), "Notification permission denied", Toast.LENGTH_SHORT).show();
-                }
-                return;
-
+        if (requestCode == PERMISSION_REQUEST_CODE) {
+            if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                Log.d(getTag(), "Notification permission acquired");
+            } else {
+                Toast.makeText(getContext(), "Notification permission denied", Toast.LENGTH_SHORT).show();
+            }
         }
 
     }
