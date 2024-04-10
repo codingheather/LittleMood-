@@ -8,7 +8,6 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
-import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -17,6 +16,8 @@ import com.google.firebase.FirebaseApp;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+
+import org.checkerframework.checker.nullness.qual.NonNull;
 
 public class LoginActivity extends AppCompatActivity {
 
@@ -32,8 +33,8 @@ public class LoginActivity extends AppCompatActivity {
     public void login(View view) {
         String email = ((EditText) findViewById(R.id.Email)).getText().toString();
         String password = ((EditText) findViewById(R.id.Password)).getText().toString();
-//        String email = "h1@gmail.com";
-//        String password = "111111";
+        email = "h1@gmail.com";
+        password = "111111";
         mAuth.signInWithEmailAndPassword(email, password)
                 .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
                     @Override
