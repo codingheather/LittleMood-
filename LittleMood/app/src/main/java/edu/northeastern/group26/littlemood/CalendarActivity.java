@@ -66,6 +66,7 @@ public class CalendarActivity extends AppCompatActivity {
     private Handler quoteHandler;
     private Calendar calendar;
     private String userName;
+    private String dateString;
     private List<CalendarDay> events = new ArrayList<>(); // events on the calendar
     private static final int SUCCESS = 100;
     private FirebaseAuth mAuth = FirebaseAuth.getInstance();
@@ -123,6 +124,21 @@ public class CalendarActivity extends AppCompatActivity {
         // set maximum date to today
         Calendar today = Calendar.getInstance();
         calendarView.setMaximumDate(today);
+
+        // jump to recently updated journal month
+        dateString = getIntent().getStringExtra("UPDATE DATE");
+        if (dateString != null){
+            try {
+                SimpleDateFormat format = new SimpleDateFormat("MMMM dd. yyyy", Locale.US);
+                // Extract the substring that matches the date format, excluding the day of the week
+                String datePart = dateString.substring(0, dateString.lastIndexOf(" "));
+                Date date = format.parse(datePart);
+                calendarView.setDate(date);
+            } catch (ParseException e) {
+                e.printStackTrace();
+            }
+        }
+
 
         // show emojis under each date
         setDay();
