@@ -180,6 +180,7 @@ public class JournalActivity extends AppCompatActivity {
 
                 });
                 Intent intent = new Intent(getApplicationContext(), CalendarActivity.class);
+                intent.putExtra("UPDATE DATE", date);
                 startActivity(intent);
             }
         });

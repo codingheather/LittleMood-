@@ -1,6 +1,5 @@
 package edu.northeastern.group26.littlemood;
 
-import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
@@ -37,8 +36,6 @@ public class SignUpActivity extends AppCompatActivity {
         String email = ((EditText) findViewById(R.id.SignUpEmail)).getText().toString();
         String password = ((EditText) findViewById(R.id.SignUpPassword)).getText().toString();
         String username = ((EditText) findViewById(R.id.SignUpUsername)).getText().toString();
-//        email="wendyjiang142322@gmail.com";
-//        password="Yanyan142322";
 
         signup.setVisibility(View.INVISIBLE);
         waitSignup.setVisibility(View.VISIBLE);
@@ -46,9 +43,8 @@ public class SignUpActivity extends AppCompatActivity {
                 .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
                     @Override
                     public void onComplete(@NonNull Task<AuthResult> task) {
-//                        Log.i("TAG", "onComplete: 44444444");
+
                         if (task.isSuccessful()) {
-//                            Log.i("TAG", "onComplete:1111 ");
                             // Sign in success, update UI with the signed-in user's information
                             Log.d(SignUpActivity.class.getName(), "createUserWithEmail:success");
                             FirebaseUser user = mAuth.getCurrentUser();
@@ -61,7 +57,6 @@ public class SignUpActivity extends AppCompatActivity {
                             intent.putExtra("username", username);
                             startActivity(intent);
                         } else {
-//                            Log.i("TAG", "onComplete: 2222"+ task.getException());
                             // If sign in fails, display a message to the user.
                             Log.w(SignUpActivity.class.getName(), "createUserWithEmail:failure", task.getException());
                             Toast.makeText(SignUpActivity.this, "Authentication failed.",

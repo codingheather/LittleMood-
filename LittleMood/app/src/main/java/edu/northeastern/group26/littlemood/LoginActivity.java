@@ -40,12 +40,6 @@ public class LoginActivity extends AppCompatActivity {
         String email = ((EditText) findViewById(R.id.Email)).getText().toString();
         String password = ((EditText) findViewById(R.id.Password)).getText().toString();
 
-        email = "h1@gmail.com";
-        password = "111111";
-
-//        String email = "h1@gmail.com";
-//        String password = "111111";
-
         login.setVisibility(View.INVISIBLE);
         waitLogin.setVisibility(View.VISIBLE);
 
