@@ -207,11 +207,9 @@ public class CalendarActivity extends AppCompatActivity {
 
 
     private void updateTitle(TextView textView){
-        if (userName == null) {
-            FirebaseUser user = mAuth.getCurrentUser();
-            assert user != null;
-            userName = user.getDisplayName();
-        }
+        FirebaseUser user = mAuth.getCurrentUser();
+        assert user != null;
+        userName = user.getDisplayName();
         textView.setText(String.format("Hello %s!", userName));
     }
 
@@ -370,5 +368,11 @@ public class CalendarActivity extends AppCompatActivity {
         canvas.drawText(emoji, 0, baseline, paint);
 
         return new BitmapDrawable(context.getResources(), image);
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        updateTitle(titleText);
     }
 }
