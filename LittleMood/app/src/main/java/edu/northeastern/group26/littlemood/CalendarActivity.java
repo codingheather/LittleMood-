@@ -352,10 +352,4 @@ public class CalendarActivity extends AppCompatActivity {
         super.onResume();
         updateTitle(titleText);
     }
-
-    @Override
-    protected void onResume() {
-        super.onResume();
-        updateTitle(titleText);
-    }
 }
