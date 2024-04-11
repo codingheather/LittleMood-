@@ -4,112 +4,123 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical"
     android:background="@color/light_yellow"
+    android:orientation="vertical"
     tools:context=".JournalActivity">
+
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:orientation="vertical">
 
-    <TextView
-        android:id="@+id/time"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:gravity="center"
-        android:padding="13dp"
-        android:text="March 24. Sat"
-        android:background="@color/baby_blue"
-        android:textSize="20sp" />
+        <TextView
+            android:id="@+id/time"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@color/baby_blue"
+            android:gravity="center"
+            android:padding="13dp"
+            android:text="March 24. Sat"
+            android:textSize="20sp" />
 
-    <TextView
-        android:layout_width="wrap_content"
-        android:id="@+id/img1"
-        android:layout_margin="10dp"
-        android:textColor="@color/light_yellow"
-        android:textSize="60dp"
-        android:layout_gravity="center"
-        android:text="🌍"
-        android:layout_height="wrap_content" />
-
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="vertical"
-        android:layout_margin="20dp"
-        android:paddingLeft="10dp"
-        android:paddingRight="10dp"
-        android:background="@drawable/border">
+        <TextView
+            android:id="@+id/img1"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_margin="10dp"
+            android:text="🌍"
+            android:textColor="@color/light_yellow"
+            android:textSize="60dp" />
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="horizontal">
-            <TextView
-                android:layout_width="wrap_content"
+            android:layout_margin="20dp"
+            android:background="@drawable/border"
+            android:orientation="vertical"
+            android:paddingLeft="10dp"
+            android:paddingRight="10dp">
+
+            <LinearLayout
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_gravity="center"
-                android:layout_weight="1"
-                android:textStyle="italic"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:layout_weight="1"
+                    android:padding="10dp"
+                    android:text="Record Your Day !"
+                    android:textSize="20sp"
+                    android:textStyle="italic" />
+            </LinearLayout>
+
+            <EditText
+                android:id="@+id/add_content"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                android:background="@android:drawable/edit_text"
+                android:backgroundTint="#F5F5DC"
+                android:enabled="true"
+                android:gravity="top"
+                android:hint="input..."
+                android:inputType="textMultiLine"
+                android:maxLines="10"
+                android:minLines="8"
                 android:padding="10dp"
-                android:text="Record Your Day !"
-                android:textSize="20sp" />
+                android:scrollbars="vertical" />
+
+            <ImageView
+                android:id="@+id/img"
+                android:layout_width="110dp"
+                android:layout_height="110dp"
+                android:layout_marginTop="10dp"
+                android:layout_marginBottom="20dp"
+                android:src="@drawable/photo" />
         </LinearLayout>
 
-        <EditText
-            android:id="@+id/add_content"
-            android:layout_width="fill_parent"
+
+        <LinearLayout
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:enabled="true"
-            android:backgroundTint="#F5F5DC"
-            android:gravity="top"
-            android:inputType="textMultiLine"
-            android:minLines="8"
-            android:hint="input..."
-            android:padding="10dp"
-            android:maxLines="10"
-            android:layout_marginTop="10dp"
-            android:scrollbars="vertical"
-            android:background="@android:drawable/edit_text"/>
+            android:layout_margin="30dp"
+            android:orientation="horizontal">
 
-        <ImageView
-            android:layout_marginTop="10dp"
-            android:layout_marginBottom="20dp"
-            android:id="@+id/img"
-            android:layout_width="110dp"
-            android:layout_height="110dp"
-            android:src="@drawable/photo"/>
-    </LinearLayout>
+            <androidx.appcompat.widget.AppCompatButton
+                android:id="@+id/ok"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:layout_gravity="center"
+                android:layout_marginRight="24dp"
+                android:layout_weight="1"
+                android:background="@drawable/btn1"
+                android:text="ok"
+                android:textColor="@color/white" />
 
+            <androidx.appcompat.widget.AppCompatButton
+                android:id="@+id/close"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:layout_gravity="center"
+                android:layout_marginLeft="24dp"
+                android:layout_weight="1"
+                android:background="@drawable/btn1"
+                android:text="cancel"
+                android:textColor="@color/white" />
+        </LinearLayout>
 
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_margin="30dp"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal">
-        <ImageView
-            android:layout_width="40dp"
-            android:layout_gravity="center"
+        <androidx.appcompat.widget.AppCompatButton
+            android:id="@+id/delete"
+            android:layout_width="100dp"
             android:layout_height="40dp"
-            android:id="@+id/ok"
-            android:layout_weight="1"
-            android:src="@drawable/ok"/>
-
-        <ImageView
-            android:layout_width="40dp"
             android:layout_gravity="center"
             android:layout_weight="1"
-            android:id="@+id/close"
-            android:layout_height="40dp"
-            android:src="@drawable/close"/>
-    </LinearLayout>
-
-    <ImageView
-        android:layout_width="40dp"
-        android:layout_gravity="center"
-        android:layout_weight="1"
-        android:id="@+id/delete"
-        android:layout_height="40dp"
-        android:src="@drawable/close"/>
+            android:background="@drawable/btn1"
+            android:text="delete"
+            android:textColor="@color/white" />
     </LinearLayout>
 </androidx.core.widget.NestedScrollView>
