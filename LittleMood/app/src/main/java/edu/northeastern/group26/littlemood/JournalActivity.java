@@ -13,6 +13,7 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.AppCompatButton;
 import androidx.camera.core.ImageCapture;
 
 import com.bumptech.glide.Glide;
@@ -127,7 +128,7 @@ public class JournalActivity extends AppCompatActivity {
             }
         });
 
-        ImageView ok = findViewById(R.id.ok);
+        AppCompatButton ok = findViewById(R.id.ok);
         ok.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -203,7 +204,7 @@ public class JournalActivity extends AppCompatActivity {
         });
 
 
-        ImageView close=findViewById(R.id.close);
+        AppCompatButton close=findViewById(R.id.close);
         close.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {

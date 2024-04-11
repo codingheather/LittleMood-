@@ -3,6 +3,8 @@ package edu.northeastern.group26.littlemood;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
@@ -26,6 +28,10 @@ public class LoginActivity extends AppCompatActivity {
     private FirebaseAuth mAuth;
     private LinearLayout waitLogin;
     private ConstraintLayout login;
+    private EditText emailText;
+    private EditText passwordText;
+    private Button loginButton;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -34,13 +40,59 @@ public class LoginActivity extends AppCompatActivity {
         setContentView(R.layout.activity_login);
         waitLogin = findViewById(R.id.loading_login_progressBar);
         login = findViewById(R.id.login);
+        emailText = (EditText) findViewById(R.id.Email);
+        passwordText = (EditText) findViewById(R.id.Password);
+        loginButton = (Button) findViewById(R.id.LogInButton);
+        loginButton.setEnabled(false);
+
+        emailText.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+                return;
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                if (s.length() > 0 && passwordText.length() > 0) {
+                    loginButton.setEnabled(true);
+                } else {
+                    loginButton.setEnabled(false);
+                }
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+                return;
+            }
+        });
+
+        passwordText.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+                return;
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                if (s.length() > 0 && passwordText.length() > 0) {
+                    loginButton.setEnabled(true);
+                } else {
+                    loginButton.setEnabled(false);
+                }
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+                return;
+            }
+        });
     }
 
     public void login(View view) {
-        String email = ((EditText) findViewById(R.id.Email)).getText().toString();
-        String password = ((EditText) findViewById(R.id.Password)).getText().toString();
+        String email = emailText.getText().toString();
+        String password = passwordText.getText().toString();
 
-        login.setVisibility(View.INVISIBLE);
+        login.setEnabled(false);
         waitLogin.setVisibility(View.VISIBLE);
 
         mAuth.signInWithEmailAndPassword(email, password)
@@ -51,10 +103,8 @@ public class LoginActivity extends AppCompatActivity {
                             // Sign in success, update UI with the signed-in user's information
                             Log.d(LoginActivity.class.getName(), "signInWithEmail:success");
                             Toast.makeText(LoginActivity.this, "Successfully log in", Toast.LENGTH_SHORT).show();
-                            FirebaseUser user = mAuth.getCurrentUser();
-
-
                             waitLogin.setVisibility(View.GONE);
+                            login.setEnabled(true);
                             Intent intent = new Intent(getApplicationContext(), CalendarActivity.class);
                             startActivity(intent);
                         } else {
@@ -63,6 +113,7 @@ public class LoginActivity extends AppCompatActivity {
                             Toast.makeText(LoginActivity.this, "Log in failed.",
                                     Toast.LENGTH_SHORT).show();
                             waitLogin.setVisibility(View.GONE);
+                            login.setEnabled(true);
                         }
                     }
                 });

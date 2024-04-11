@@ -51,6 +51,8 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 
 public class CalendarActivity extends AppCompatActivity {
@@ -70,9 +72,11 @@ public class CalendarActivity extends AppCompatActivity {
     private List<CalendarDay> events = new ArrayList<>(); // events on the calendar
     private static final int SUCCESS = 100;
     private FirebaseAuth mAuth = FirebaseAuth.getInstance();
+    private ExecutorService executorService;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        executorService = Executors.newFixedThreadPool(2);
         setContentView(R.layout.activity_calendar);
         titleText = findViewById(R.id.titleText);
         searchIcon = findViewById(R.id.searchIcon);
@@ -220,32 +224,33 @@ public class CalendarActivity extends AppCompatActivity {
         query.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
-                for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
-                    JournalEntry userEntry = snapshot.getValue(JournalEntry.class);
+                executorService.execute(() -> {
+                    for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
+                        JournalEntry userEntry = snapshot.getValue(JournalEntry.class);
 
-                    SimpleDateFormat sdf = new SimpleDateFormat("MMMM dd. yyyy EEE");
-                    Date date;
-                    try {
-                        date = sdf.parse(userEntry.date);
-                        String emoji = userEntry.emoji;
-                        calendar = Calendar.getInstance();
-                        calendar.setTime(date);
-                        Drawable emojiDrawable = emojiToDrawable(CalendarActivity.this, emoji, 100);
-                        CalendarDay calendarDay = new CalendarDay(calendar);
-                        calendarDay.setImageDrawable(emojiDrawable);
-                        events.add(calendarDay);
-                    } catch (ParseException e) {
-                        Log.e("Parsed error", "Error parsing the date.");
-                        e.printStackTrace();
+                        SimpleDateFormat sdf = new SimpleDateFormat("MMMM dd. yyyy EEE");
+                        Date date;
+                        try {
+                            date = sdf.parse(userEntry.date);
+                            String emoji = userEntry.emoji;
+                            calendar = Calendar.getInstance();
+                            calendar.setTime(date);
+                            Drawable emojiDrawable = emojiToDrawable(CalendarActivity.this, emoji, 100);
+                            CalendarDay calendarDay = new CalendarDay(calendar);
+                            calendarDay.setImageDrawable(emojiDrawable);
+                            events.add(calendarDay);
+                        } catch (ParseException e) {
+                            Log.e("Parsed error", "Error parsing the date.");
+                            e.printStackTrace();
+                        }
                     }
-                }
-                // Update the calendar view with the new events list
-                calendarView.setCalendarDays(events);
 
-                // Make UI updates after data is processed
-                runOnUiThread(() -> {
-                    waitCalendar.setVisibility(View.GONE);
-                    calendarView.setVisibility(View.VISIBLE);
+                    // Make UI updates after data is processed
+                    runOnUiThread(() -> {
+                        calendarView.setCalendarDays(events);
+                        waitCalendar.setVisibility(View.GONE);
+                        calendarView.setVisibility(View.VISIBLE);
+                    });
                 });
             }
             @Override
@@ -292,32 +297,7 @@ public class CalendarActivity extends AppCompatActivity {
     }
 
     private void getDailyQuote(TextView textView){
-        quoteHandler = new Handler(message -> {
-            if(message.what == SUCCESS){
-                String responseData = message.getData().getString("data");
-                try {
-                    JSONArray jsonArray = new JSONArray(responseData);
-                    if (!jsonArray.isNull(0)) {
-                        JSONObject jsonObject = jsonArray.getJSONObject(0);
-                        String quoteText = jsonObject.optString("q"); // Assuming "q" is the quote text
-                        String author = jsonObject.optString("a"); // Assuming "a" is the author
-                        String fullQuote = "\"" + quoteText + "\" - " + author;
-                        // update UI with the quote
-                        runOnUiThread(() -> {
-                            textView.setText(fullQuote);
-                            waitQuote.setVisibility(View.GONE);
-                            // calendarView.setVisibility(View.VISIBLE);
-                            textView.setVisibility(View.VISIBLE);
-                        });
-                    }
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                }
-            }
-            return false;
-        });
-
-        new Thread(() -> {
+        executorService.execute(() -> {
             String jsonData = askZenQuote();
             Log.d("jsonData：",jsonData);
             Message message=Message.obtain();
@@ -325,9 +305,26 @@ public class CalendarActivity extends AppCompatActivity {
             bundle.putString("data",jsonData);
             message.setData(bundle);
             message.what=SUCCESS;
-            quoteHandler.sendMessage(message);
-        }).start();
-
+            String responseData = message.getData().getString("data");
+            try {
+                JSONArray jsonArray = new JSONArray(responseData);
+                if (!jsonArray.isNull(0)) {
+                    JSONObject jsonObject = jsonArray.getJSONObject(0);
+                    String quoteText = jsonObject.optString("q"); // Assuming "q" is the quote text
+                    String author = jsonObject.optString("a"); // Assuming "a" is the author
+                    String fullQuote = "\"" + quoteText + "\" - " + author;
+                    // update UI with the quote
+                    runOnUiThread(() -> {
+                        textView.setText(fullQuote);
+                        waitQuote.setVisibility(View.GONE);
+                        // calendarView.setVisibility(View.VISIBLE);
+                        textView.setVisibility(View.VISIBLE);
+                    });
+                }
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+        });
     }
 
     private String askZenQuote(){

@@ -21,6 +21,7 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.Toast;
 
 import com.google.android.gms.tasks.OnFailureListener;
@@ -48,6 +49,7 @@ public class CameraActivity extends AppCompatActivity {
 
     PreviewView mPreviewView;
     ImageView captureImage;
+    LinearLayout loading;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -56,6 +58,7 @@ public class CameraActivity extends AppCompatActivity {
 
         mPreviewView = findViewById(R.id.preview);
         captureImage = findViewById(R.id.captureImg);
+        loading = findViewById(R.id.loading_camera_progressBar);
 
         checkAndRequestPermissions();
     }
@@ -105,7 +108,8 @@ public class CameraActivity extends AppCompatActivity {
         captureImage.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Log.d("heather", ">>>>>");
+                captureImage.setVisibility(View.GONE);
+                loading.setVisibility(View.VISIBLE);
                 SimpleDateFormat mDateFormat = new SimpleDateFormat("yyyyMMddHHmmss", Locale.US);
                 File file = new File(getBatchDirectoryName(), mDateFormat.format(new Date())+ ".jpg");
 
@@ -119,6 +123,8 @@ public class CameraActivity extends AppCompatActivity {
                     @Override
                     public void onError(@NonNull ImageCaptureException error) {
                         error.printStackTrace();
+                        captureImage.setVisibility(View.VISIBLE);
+                        loading.setVisibility(View.GONE);
                     }
                 });
             }
@@ -152,14 +158,23 @@ public class CameraActivity extends AppCompatActivity {
                         intent.putExtra("text", getIntent().getStringExtra("text"));
                         intent.putExtra("photo", downloadUrl);
 
+                        loading.setVisibility(View.GONE);
+                        captureImage.setVisibility(View.VISIBLE);
                         startActivity(intent);
                     }
-                });
+                }).addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        loading.setVisibility(View.GONE);
+                        captureImage.setVisibility(View.VISIBLE);
+                    }
+                });;
             }
         }).addOnFailureListener(new OnFailureListener() {
             @Override
             public void onFailure(@NonNull Exception e) {
-                // Handle unsuccessful upload
+                loading.setVisibility(View.GONE);
+                captureImage.setVisibility(View.VISIBLE);
             }
         });
     };
