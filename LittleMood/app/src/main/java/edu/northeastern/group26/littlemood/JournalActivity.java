@@ -1,5 +1,7 @@
 package edu.northeastern.group26.littlemood;
 
+import static android.content.ContentValues.TAG;
+
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Environment;
@@ -167,16 +169,14 @@ public class JournalActivity extends AppCompatActivity {
                             message = (count - 1) + " more users have " + emoji + " feeling today.\nYou are not alone";
                         }
 
-                        Toast toast = new Toast(getApplicationContext());
+                        Toast toast = Toast.makeText(getApplicationContext(), message, Toast.LENGTH_LONG);
                         toast.setGravity(Gravity.CENTER, 0, 0); // Position the Toast
-                        toast.setDuration(Toast.LENGTH_LONG);
-                        toast.setText(message);
                         toast.show();
                     }
 
                     @Override
-                    public void onCancelled(@NonNull DatabaseError error) {
-                        Log.w("error", error.toException());
+                    public void onCancelled(@NonNull DatabaseError databaseError) {
+                        Log.e(TAG, "onCancelled", databaseError.toException());
                     }
 
                 });

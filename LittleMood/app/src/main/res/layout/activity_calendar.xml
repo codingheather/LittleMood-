@@ -56,12 +56,14 @@
             app:layout_constraintStart_toEndOf="@+id/searchIcon"
             app:layout_constraintTop_toTopOf="parent" />
 
-        <SearchView
+        <androidx.appcompat.widget.SearchView
             android:id="@+id/searchView"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:background="@android:color/white"
             android:visibility="gone"
+            android:focusableInTouchMode="true"
+            android:iconifiedByDefault="false"
             app:layout_constraintBottom_toTopOf="@+id/calendarView"
             app:layout_constraintEnd_toStartOf="@+id/searchIcon"
             app:layout_constraintHorizontal_chainStyle="spread"

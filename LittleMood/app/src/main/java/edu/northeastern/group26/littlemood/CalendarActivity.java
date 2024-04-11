@@ -2,13 +2,7 @@ package edu.northeastern.group26.littlemood;
 
 import static android.content.ContentValues.TAG;
 
-import android.content.Context;
 import android.content.Intent;
-import android.graphics.Bitmap;
-import android.graphics.Canvas;
-import android.graphics.Paint;
-import android.graphics.Typeface;
-import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.os.Handler;
@@ -17,7 +11,7 @@ import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
-import android.widget.SearchView;
+import androidx.appcompat.widget.SearchView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -143,8 +137,7 @@ public class CalendarActivity extends AppCompatActivity {
             }
         }
 
-
-        // show emojis under each date
+        // show emojis of each date
         setDay();
 
         // set date click event
@@ -205,7 +198,6 @@ public class CalendarActivity extends AppCompatActivity {
         });
     }
 
-
     private void updateTitle(TextView textView){
         if (userName == null) {
             FirebaseUser user = mAuth.getCurrentUser();
@@ -235,7 +227,7 @@ public class CalendarActivity extends AppCompatActivity {
                             String emoji = userEntry.emoji;
                             calendar = Calendar.getInstance();
                             calendar.setTime(date);
-                            Drawable emojiDrawable = emojiToDrawable(CalendarActivity.this, emoji, 100);
+                            Drawable emojiDrawable = EmojiUtil.emojiToDrawable(CalendarActivity.this, emoji, 100);
                             CalendarDay calendarDay = new CalendarDay(calendar);
                             calendarDay.setImageDrawable(emojiDrawable);
                             events.add(calendarDay);
@@ -255,13 +247,16 @@ public class CalendarActivity extends AppCompatActivity {
             }
             @Override
             public void onCancelled(DatabaseError databaseError) {
-                // Handle possible errors.
+                Log.e(TAG, "onCancelled", databaseError.toException());
             }
         });
     }
 
     private void showSearchedDate(@NonNull SearchView searchView){
         searchView.setQueryHint("YYYY-MM");
+        searchView.setIconifiedByDefault(false);
+        searchView.requestFocus();
+
         if (searchView.getVisibility() == View.GONE) {
             searchView.setVisibility(View.VISIBLE);
         } else {
@@ -310,14 +305,13 @@ public class CalendarActivity extends AppCompatActivity {
                 JSONArray jsonArray = new JSONArray(responseData);
                 if (!jsonArray.isNull(0)) {
                     JSONObject jsonObject = jsonArray.getJSONObject(0);
-                    String quoteText = jsonObject.optString("q"); // Assuming "q" is the quote text
-                    String author = jsonObject.optString("a"); // Assuming "a" is the author
+                    String quoteText = jsonObject.optString("q");
+                    String author = jsonObject.optString("a");
                     String fullQuote = "\"" + quoteText + "\" - " + author;
                     // update UI with the quote
                     runOnUiThread(() -> {
                         textView.setText(fullQuote);
                         waitQuote.setVisibility(View.GONE);
-                        // calendarView.setVisibility(View.VISIBLE);
                         textView.setVisibility(View.VISIBLE);
                     });
                 }
@@ -355,20 +349,4 @@ public class CalendarActivity extends AppCompatActivity {
         return "Failed to fetch quote";
     }
 
-    public Drawable emojiToDrawable(Context context, String emoji, int sizeInPixels) {
-        Paint paint = new Paint(Paint.ANTI_ALIAS_FLAG);
-        paint.setTextSize(sizeInPixels);
-        paint.setTypeface(Typeface.DEFAULT); // Set the typeface you want to use
-        paint.setTextAlign(Paint.Align.LEFT);
-
-        float baseline = -paint.ascent(); // ascent() is negative
-        int width = (int) (paint.measureText(emoji) + 0.5f); // round
-        int height = (int) (baseline + paint.descent() + 0.5f);
-
-        Bitmap image = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888);
-        Canvas canvas = new Canvas(image);
-        canvas.drawText(emoji, 0, baseline, paint);
-
-        return new BitmapDrawable(context.getResources(), image);
-    }
 }
