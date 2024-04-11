@@ -30,6 +30,7 @@ import androidx.preference.PreferenceFragmentCompat;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseAuthInvalidCredentialsException;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.auth.UserProfileChangeRequest;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -130,20 +131,33 @@ public class SettingsFragment extends PreferenceFragmentCompat {
             builder.setView(dialogView);
 
             EditText newU = dialogView.findViewById(R.id.NewU);
+            EditText currentU = dialogView.findViewById(R.id.CurrentU);
 
             builder.setPositiveButton("Confirm", (dialog, id) -> {
-                String newEmail = newU.getText().toString();
-
+                String newUsername = newU.getText().toString();
+                String currentUserName = currentU.getText().toString();
+                if (newUsername.isEmpty() || currentUserName.isEmpty()) {
+                    Toast.makeText(getActivity(), "Please enter current and new username", Toast.LENGTH_SHORT).show();
+                    return;
+                }
                 FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
 
                 assert user != null;
-                user.updateEmail(newEmail)
-                        .addOnCompleteListener(task -> {
-                            if (task.isSuccessful()) {
-                                Log.d("EmailUpdate", "User email updated.");
-                                Toast.makeText(getActivity(), "Successfully changed username", Toast.LENGTH_SHORT).show();
-                            }
-                        });
+                if (currentUserName.equals(user.getDisplayName())) {
+                    UserProfileChangeRequest.Builder profileBuilder = new UserProfileChangeRequest.Builder();
+                    profileBuilder.setDisplayName(newUsername);
+                    user.updateProfile(profileBuilder.build())
+                            .addOnCompleteListener(task -> {
+                                if (task.isSuccessful()) {
+                                    Log.d("UsernameUpdate", "Username updated.");
+                                    Toast.makeText(getActivity(), "Successfully changed username", Toast.LENGTH_SHORT).show();
+                                } else {
+                                    Toast.makeText(getActivity(), "Something went wrong when changing username", Toast.LENGTH_SHORT).show();
+                                }
+                            });
+                } else {
+                    Toast.makeText(getActivity(), "Current user name is not correct", Toast.LENGTH_SHORT).show();
+                }
             })
                     .setNegativeButton("Back", (dialog, id) -> dialog.dismiss());
 
