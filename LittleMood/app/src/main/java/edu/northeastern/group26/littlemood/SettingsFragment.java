@@ -27,8 +27,6 @@ import androidx.core.app.NotificationCompat;
 import androidx.preference.CheckBoxPreference;
 import androidx.preference.PreferenceFragmentCompat;
 
-import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseAuthInvalidCredentialsException;
 import com.google.firebase.auth.FirebaseUser;
