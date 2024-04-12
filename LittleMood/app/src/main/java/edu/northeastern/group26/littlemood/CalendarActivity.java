@@ -5,7 +5,6 @@ import static android.content.ContentValues.TAG;
 import android.content.Intent;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
-import android.os.Handler;
 import android.os.Message;
 import android.util.Log;
 import android.view.View;
@@ -57,11 +56,8 @@ public class CalendarActivity extends AppCompatActivity {
     private CalendarView calendarView;
     private SearchView searchInput;
     private TextView quoteTextView;
-    private TextView titleText;
     private LinearLayout waitQuote, waitCalendar;
-    private Handler quoteHandler;
     private Calendar calendar;
-    private String userName;
     private String dateString;
     private List<CalendarDay> events = new ArrayList<>(); // events on the calendar
     private static final int SUCCESS = 100;
@@ -72,7 +68,6 @@ public class CalendarActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         executorService = Executors.newFixedThreadPool(2);
         setContentView(R.layout.activity_calendar);
-        titleText = findViewById(R.id.titleText);
         searchIcon = findViewById(R.id.searchIcon);
         calendarView = findViewById(R.id.calendarView);
         addJournalButton = findViewById(R.id.addJournalButton);
@@ -89,11 +84,8 @@ public class CalendarActivity extends AppCompatActivity {
         waitCalendar.setVisibility(View.VISIBLE);
         waitQuote.setVisibility(View.VISIBLE);
 
-        // get username (if jump from sign up)
-        userName = getIntent().getStringExtra("username");
-
         // update title (hello xyz)
-        updateTitle(titleText);
+        updateTitle();
         // get daily quote(inspiring words) from API and update UI
         getDailyQuote(quoteTextView);
 
@@ -198,11 +190,17 @@ public class CalendarActivity extends AppCompatActivity {
         });
     }
 
-    private void updateTitle(TextView textView){
+    private void updateTitle(){
+        TextView textView = findViewById(R.id.titleText);
         FirebaseUser user = mAuth.getCurrentUser();
-        assert user != null;
-        userName = user.getDisplayName();
-        textView.setText(String.format("Hello %s!", userName));
+        String userName = getIntent().getStringExtra("username");
+        if (user != null && user.getDisplayName() != null && !user.getDisplayName().isEmpty()) {
+            textView.setText(String.format("Hello %s!", user.getDisplayName()));
+        } else if (userName != null){
+            textView.setText(String.format("Hello %s!", userName));
+        } else {
+            textView.setText("Hello Guest!");
+        }
     }
 
     private void setDay(){
@@ -350,6 +348,6 @@ public class CalendarActivity extends AppCompatActivity {
     @Override
     protected void onResume() {
         super.onResume();
-        updateTitle(titleText);
+        updateTitle();
     }
 }
