@@ -29,7 +29,7 @@ Our app provides users with an interactive overview of their emotional well-bein
 * Email: yingbing@gmail.com   Password: 123456
 
 ## Authors
-* [@Kexin Heather Hao](hao.k@northeastern.edu)
-* [@Ruoyan Jiang](jiang.ruoy@northeastern.edu)
-* [@Yingbing Zhu](zhu.yingb@northeastern.edu)
-* [@Xiyu Wan](wan.xiy@northeastern.edu)
+* [@Kexin Heather Hao]()
+* [@Ruoyan Jiang]()
+* [@Yingbing Zhu]()
+* [@Xiyu Wan]()
