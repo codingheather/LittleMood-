@@ -27,3 +27,9 @@ Our app provides users with an interactive overview of their emotional well-bein
 # Test Accounts with activities:
 * Email: mood@mood.com   Password: mood123
 * Email: yingbing@gmail.com   Password: 123456
+
+## Authors
+* [@Kexin Heather Hao](hao.k@northeastern.edu)
+* [@Ruoyan Jiang](jiang.ruoy@northeastern.edu)
+* [@Yingbing Zhu](zhu.yingb@northeastern.edu)
+* [@Xiyu Wan](wan.xiy@northeastern.edu)
