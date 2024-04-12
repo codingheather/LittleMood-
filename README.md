@@ -25,5 +25,5 @@ Our app has a clear and intuitive UI design. We have user-centric design that in
 Our app provides users with an interactive overview of their emotional well-being. Users log their daily emotions using emojis, transforming the abstract concept of mood tracking into a colorful, intuitive, and engaging visual diary. This immediate visual feedback makes the process enjoyable and easy to understand, encouraging daily interaction. Users can also personalize their calendar by choosing different emoji sets. This customization enhances the user's connection to the app, making the tracking experience uniquely tailored to their preferences. Users can track daily moods with emojis and view comprehensive statistics that summarize emotional trends over the month. Additionally, the app enhances community connection by querying Firebase Realtime Database to identify and display users who have recorded the same emojis on the same day, fostering a sense of solidarity and understanding. Knowing others share their feelings can validate personal experiences and stimulate further engagement with the app. This feature set not only helps users reflect on their own emotional health but also connects them with a broader community experiencing similar emotions. 
 
 # Test Accounts with activities:
-Email: mood@mood.com   Password: mood123
-Email: yingbing@gmail.com   Password: 123456
+* Email: mood@mood.com   Password: mood123
+* Email: yingbing@gmail.com   Password: 123456
