@@ -7,7 +7,7 @@ Our primary audience comprises adults aged 18-35 who are in the early stages of 
 In essence, LittleMood! is a gateway to self-discovery, introspection, and human connection. It stands as a compassionate ally in achieving emotional equilibrium and fulfillment. Our development team is committed to crafting an environment where every emotional nuance finds a welcoming refuge.
 
 # Most intriguing design features: 
-# Emoji Calendar: 
+### Emoji Calendar: 
 Our interactive calendar displays an emoji for each day, offering a quick and emotive snapshot of the user's mood history, promoting frequent use and personal reflection. Beneath the calendar, daily inspirational quotes are dynamically displayed, fetched via an API integration, enriching the user's daily interaction. For journal updates, users can easily update their journal by clicking on a prominent emoji face in the main page to add an entry for today, or by selecting specific dates on the calendar. Users can also effortlessly navigate and search past entries by searching past months. 
 # Journal System: 
 The journaling system offers a design that is both simple and comprehensive, enabling users to intuitively record their mood with emojis, upload photos, and take notes. All data stored in a specific journal—whether emoji, photo, or note—can be updated or deleted individually or collectively. The interfaces for updating and deleting journal entries maintain consistency with the journal creation process. Additionally, the system enhances user engagement by featuring a pop-up window that indicates other users may be experiencing similar feelings on the same day.
